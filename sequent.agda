@@ -14,6 +14,12 @@ data Con : Set where
   • : Con
   _,_ : Con → Form → Con
 
+open import Substructural.Core.Extensions Form public
+  using (L⟨_⟩; Lift1; Max⟨_,_⟩; Kol1⟨_,_⟩; Kj)
+
+open import Substructural.Core.Conservation Form public
+  using (R'DerivableInMax; JHomogeneous; proposition5-2026; lemma2-2026; theorem6; theorem6-k=j-compatible)
+
 infix 7 _,_
 
 variable A B C : Form

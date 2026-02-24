@@ -1,0 +1,8 @@
+name: nuclear
+include: .
+depend:
+  cubical-0.9
+flags:
+  --cubical
+  --guardedness
+  -WnoUnsupportedIndexedMatch
