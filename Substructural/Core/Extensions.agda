@@ -61,7 +61,31 @@ data RkMinusRules (k : S → S) : RuleSet where
     : ∀ {Γ a}
     → RkMinusRules k (mkRule ((Γ ▷ k a) ∷ []) (Γ ▷ k (k a)))
 
--- Definition 7(2): Gj(L) = L + {Lj} + {rj : r ∈ R}.
+data CommRules : RuleSet where
+  comm-instance
+    : ∀ {U₁ U₂ a₁ a₂ b}
+    → CommRules
+        (mkRule
+          ((U₁ ++ (a₁ ∷ a₂ ∷ U₂) ▷ b) ∷ [])
+          (U₁ ++ (a₂ ∷ a₁ ∷ U₂) ▷ b))
+
+data MonoRules : RuleSet where
+  mono-instance
+    : ∀ {U₁ U₂ a b}
+    → MonoRules
+        (mkRule
+          ((U₁ ++ U₂ ▷ b) ∷ [])
+          (plug₁ U₁ a U₂ ▷ b))
+
+data ContrRules : RuleSet where
+  contr-instance
+    : ∀ {U₁ U₂ a b}
+    → ContrRules
+        (mkRule
+          ((U₁ ++ (a ∷ a ∷ U₂) ▷ b) ∷ [])
+          (plug₁ U₁ a U₂ ▷ b))
+
+-- Definition 7(2): Gj(L) = L + {Lj} + {rj : r ∈ R}. Expansive or not?
 GjRules : (S → S) → RuleSet → RuleSet
 GjRules j R r = R r ⊎ (LjRules j r ⊎ RjRules j R r)
 

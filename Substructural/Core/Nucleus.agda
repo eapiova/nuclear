@@ -76,7 +76,7 @@ record Expansive (j : S → S) (L : Entailment) : Type ℓ where
   field
     expansive : Rj j L
 
--- Extension-stable assumptions used for Proposition 10 / Theorem 11.
+-- Extension-stable assumptions used for Proposition 10 / Theorem 11. PENSARE A COSA STAVO FACENDO
 record ExpansiveR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
   constructor mkExpansiveR
   field
@@ -111,6 +111,9 @@ record BiNucleusR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
   constructor mkBiNucleusR
   field
     biNucleusR : ∀ {R'} → R ⊆R R' → Lj j (Deriv R')
+
+
+-- ESPANSIVE needed for NUCLEI
 
 onBase-ExpansiveR : ∀ {j R} → ExpansiveR j R → Rj j (Deriv R)
 onBase-ExpansiveR e = ExpansiveR.expansiveR e (λ r → r)
@@ -156,5 +159,6 @@ rj : (S → S) → Rule → Rule
 rj = mapSuccRule
 
 -- Definition 5: "rule r survives after j" means rj is admissible.
+-- r must be admissible !!!
 SurvivesAfter : (S → S) → Rule → Entailment → Type ℓ
 SurvivesAfter j r L = AdmissibleRule (rj j r) L

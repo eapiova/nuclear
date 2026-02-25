@@ -17,6 +17,27 @@ Comm L =
   → L (U₁ ++ (a₁ ∷ a₂ ∷ U₂)) b
   → L (U₁ ++ (a₂ ∷ a₁ ∷ U₂)) b
 
+Mono : RuleSchema
+Mono L =
+  ∀ {U₁ U₂ a b}
+  → L (U₁ ++ U₂) b
+  → L (plug₁ U₁ a U₂) b
+
+Contr : RuleSchema
+Contr L =
+  ∀ {U₁ U₂ a b}
+  → L (U₁ ++ (a ∷ a ∷ U₂)) b
+  → L (plug₁ U₁ a U₂) b
+
+comm-from-rules : ∀ {R} → CommRules ⊆R R → Comm (Deriv R)
+comm-from-rules i d = ByRule (i comm-instance) (d ∷ᵃ []ᵃ)
+
+mono-from-rules : ∀ {R} → MonoRules ⊆R R → Mono (Deriv R)
+mono-from-rules i d = ByRule (i mono-instance) (d ∷ᵃ []ᵃ)
+
+contr-from-rules : ∀ {R} → ContrRules ⊆R R → Contr (Deriv R)
+contr-from-rules i d = ByRule (i contr-instance) (d ∷ᵃ []ᵃ)
+
 transportCtx
   : ∀ {L : Entailment} {Γ Γ' b}
   → Γ ≡ Γ'
@@ -150,7 +171,7 @@ proposition4
   → L⟨ R ⟩ ⊆ L⟨ R ∪R R' ⟩
 proposition4 = lift-⊆R inj₁
 
--- Lemma 6(1): Rj and Reflj are inter-derivable.
+-- Lemma 6(1): Rj and Reflj are inter-derivable. L not inductively generated?
 rj→reflj
   : ∀ {j R}
   → Rj j (L⟨ R ⟩)
@@ -298,8 +319,8 @@ lemma6 = lemma6-derivable
 -- Lemma 8 package (items 1-4 in scope for this milestone).
 lemma8
   : ∀ {j R}
-  → (L⟨ R ⟩ ⊆ G⟨ j , R ⟩)
-    × (L⟨ R ⟩ ⊆ M⟨ j , R ⟩)
+  → (L⟨ R ⟩ ⊆ G⟨ j , R ⟩) -- RISCRIVERE
+    × (L⟨ R ⟩ ⊆ M⟨ j , R ⟩) -- RISCRIVERE
     × BiNucleus j (G⟨ j , R ⟩)
     × BiNucleus j (M⟨ j , R ⟩)
     × ((∀ {R'} → R ⊆R R' → G⟨ j , R ⟩ ⊆ G⟨ j , R' ⟩)
@@ -311,6 +332,175 @@ lemma8 =
   , bi-on-M
   , (lift-G , lift-M)
 
+premises-⊆
+  : ∀ {L L' : Entailment} {ps : List Seq}
+  → L ⊆ L'
+  → PremisesHold L ps
+  → PremisesHold L' ps
+premises-⊆ {ps = []} i []ᵃ = []ᵃ
+premises-⊆ {ps = p ∷ ps} i (d ∷ᵃ ds) = i d ∷ᵃ premises-⊆ i ds
+
+-- Numbering note: `lemma8` above is the project-local package used by existing
+-- code. The lemmas below use the paper numbering (8.1, 8.3, 8.4, 8.5).
+
+mutual
+
+  lemma8-1-fwd-all
+    : ∀ {j R ps}
+    → Lj j (L⟨ R ⟩)
+    → (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+    → PremisesHold (G⟨ j , R ⟩) ps
+    → PremisesHold (L⟨ R ⟩) ps
+  lemma8-1-fwd-all {ps = []} lj surv []ᵃ = []ᵃ
+  lemma8-1-fwd-all {ps = p ∷ ps} lj surv (d ∷ᵃ ds) =
+    lemma8-1-fwd lj surv d ∷ᵃ lemma8-1-fwd-all lj surv ds
+
+  lemma8-1-fwd
+    : ∀ {j R}
+    → Lj j (L⟨ R ⟩)
+    → (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+    → G⟨ j , R ⟩ ⊆ L⟨ R ⟩
+  lemma8-1-fwd lj surv Refl = Refl
+  lemma8-1-fwd lj surv (Trans d d₁) = Trans (lemma8-1-fwd lj surv d) (lemma8-1-fwd lj surv d₁)
+  lemma8-1-fwd lj surv (ByRule (inl rr) ds) = ByRule rr (lemma8-1-fwd-all lj surv ds)
+  lemma8-1-fwd lj surv (ByRule (inr (inl lj-instance)) ds) =
+    lj (All-lookup-head (lemma8-1-fwd-all lj surv ds))
+  lemma8-1-fwd lj surv (ByRule (inr (inr (rj-instance rr))) ds) =
+    AdmissibleRule.admit (surv rr) (lemma8-1-fwd-all lj surv ds)
+
+lemma8-1-bwd
+  : ∀ {j R}
+  → G⟨ j , R ⟩ ⊆ L⟨ R ⟩
+  → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+lemma8-1-bwd {j} {R} g⊆l =
+  ljL , surv
+  where
+  ljL : Lj j (L⟨ R ⟩)
+  ljL {U} {V} {a} {b} d = g⊆l (embed-Lj (lift-base-into-G d))
+
+  surv : ∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩)
+  surv {r} rr = mkAdmissibleRule λ ds →
+    g⊆l (ByRule (inr (inr (rj-instance rr))) (premises-⊆ lift-base-into-G ds))
+
+lemma8-1
+  : ∀ {j R}
+  → (Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+    → G⟨ j , R ⟩ ⊆ L⟨ R ⟩)
+    × (G⟨ j , R ⟩ ⊆ L⟨ R ⟩
+      → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩)))
+lemma8-1 =
+  (λ { (lj , surv) → lemma8-1-fwd lj surv })
+  , lemma8-1-bwd
+
+mutual
+
+  lemma8-3-fwd-all
+    : ∀ {j R ps}
+    → BiNucleusR j R
+    → PremisesHold (G⟨ j , R ⟩) ps
+    → PremisesHold (Deriv (R ∪R RjRules j R)) ps
+  lemma8-3-fwd-all {ps = []} bn []ᵃ = []ᵃ
+  lemma8-3-fwd-all {ps = p ∷ ps} bn (d ∷ᵃ ds) =
+    lemma8-3-fwd bn d ∷ᵃ lemma8-3-fwd-all bn ds
+
+  lemma8-3-fwd
+    : ∀ {j R}
+    → BiNucleusR j R
+    → G⟨ j , R ⟩ ⊆ Deriv (R ∪R RjRules j R)
+  lemma8-3-fwd bn Refl = Refl
+  lemma8-3-fwd bn (Trans d d₁) = Trans (lemma8-3-fwd bn d) (lemma8-3-fwd bn d₁)
+  lemma8-3-fwd bn (ByRule (inl rr) ds) = ByRule (inl rr) (lemma8-3-fwd-all bn ds)
+  lemma8-3-fwd {j} {R} bn (ByRule (inr (inl lj-instance)) ds) =
+    lift-BiNucleusR bn (λ rr → inl rr) (All-lookup-head (lemma8-3-fwd-all bn ds))
+  lemma8-3-fwd bn (ByRule (inr (inr (rj-instance rr))) ds) =
+    ByRule (inr (rj-instance rr)) (lemma8-3-fwd-all bn ds)
+
+lemma8-3-bwd
+  : ∀ {j R}
+  → Deriv (R ∪R RjRules j R) ⊆ G⟨ j , R ⟩
+lemma8-3-bwd {j} {R} = lift-⊆R embed
+  where
+  embed : (R ∪R RjRules j R) ⊆R GjRules j R
+  embed (inl rr) = inl rr
+  embed (inr (rj-instance rr)) = inr (inr (rj-instance rr))
+
+lemma8-3
+  : ∀ {j R}
+  → BiNucleusR j R
+  → (G⟨ j , R ⟩ ⊆ Deriv (R ∪R RjRules j R))
+    × (Deriv (R ∪R RjRules j R) ⊆ G⟨ j , R ⟩)
+lemma8-3 bn = lemma8-3-fwd bn , lemma8-3-bwd
+
+kj-refl
+  : ∀ {j R}
+  → Rj j (L⟨ R ⟩)
+  → ∀ {a} → Kj j (L⟨ R ⟩) (singleton a) a
+kj-refl rj = rj Refl
+
+kj-trans
+  : ∀ {j R}
+  → Lj j (L⟨ R ⟩)
+  → ∀ {U V₁ V₂ a b}
+  → Kj j (L⟨ R ⟩) U a
+  → Kj j (L⟨ R ⟩) (plug₁ V₁ a V₂) b
+  → Kj j (L⟨ R ⟩) (plug V₁ V₂ U) b
+kj-trans lj d₁ d₂ = Trans d₁ (lj d₂)
+
+kj-lj-adm
+  : ∀ {j R}
+  → Lj j (L⟨ R ⟩)
+  → Lj j (Kj j (L⟨ R ⟩))
+kj-lj-adm lj d = lj d
+
+kj-rj-adm
+  : ∀ {j R}
+  → Rj j (L⟨ R ⟩)
+  → Rj j (Kj j (L⟨ R ⟩))
+kj-rj-adm rj d = rj d
+
+lemma8-4
+  : ∀ {j R}
+  → Nucleus j (L⟨ R ⟩)
+  → (∀ {a} → Kj j (L⟨ R ⟩) (singleton a) a)
+    × (∀ {U V₁ V₂ a b}
+      → Kj j (L⟨ R ⟩) U a
+      → Kj j (L⟨ R ⟩) (plug₁ V₁ a V₂) b
+      → Kj j (L⟨ R ⟩) (plug V₁ V₂ U) b)
+    × Lj j (Kj j (L⟨ R ⟩))
+    × Rj j (Kj j (L⟨ R ⟩))
+lemma8-4 n =
+  kj-refl (nucleus-rj n)
+  , kj-trans (nucleus-lj n)
+  , kj-lj-adm (nucleus-lj n)
+  , kj-rj-adm (nucleus-rj n)
+
+kj-comm : ∀ {j L} → Comm L → Comm (Kj j L)
+kj-comm c d = c d
+
+kj-mono : ∀ {j L} → Mono L → Mono (Kj j L)
+kj-mono m d = m d
+
+kj-contr : ∀ {j L} → Contr L → Contr (Kj j L)
+kj-contr c d = c d
+
+lemma8-5-comm-G : ∀ {j R} → CommRules ⊆R R → Comm (G⟨ j , R ⟩)
+lemma8-5-comm-G i = comm-from-rules (λ cr → inl (i cr))
+
+lemma8-5-mono-G : ∀ {j R} → MonoRules ⊆R R → Mono (G⟨ j , R ⟩)
+lemma8-5-mono-G i = mono-from-rules (λ mr → inl (i mr))
+
+lemma8-5-contr-G : ∀ {j R} → ContrRules ⊆R R → Contr (G⟨ j , R ⟩)
+lemma8-5-contr-G i = contr-from-rules (λ cr → inl (i cr))
+
+lemma8-5-comm-M : ∀ {j R} → CommRules ⊆R R → Comm (M⟨ j , R ⟩)
+lemma8-5-comm-M i = comm-from-rules (λ cr → inl (i cr))
+
+lemma8-5-mono-M : ∀ {j R} → MonoRules ⊆R R → Mono (M⟨ j , R ⟩)
+lemma8-5-mono-M i = mono-from-rules (λ mr → inl (i mr))
+
+lemma8-5-contr-M : ∀ {j R} → ContrRules ⊆R R → Contr (M⟨ j , R ⟩)
+lemma8-5-contr-M i = contr-from-rules (λ cr → inl (i cr))
+
 destab-mapSuccAll
   : ∀ {j R ps}
   → PremisesHold (M⟨ j , R ⟩) (map (mapSucc j) ps)
@@ -321,7 +511,7 @@ destab-mapSuccAll {j} {R} {ps = p ∷ ps} (d ∷ᵃ ds) =
 
 -- Core internal step for Proposition 10: Gj(L) ⊆ Mj(L).
 mutual
-
+-- SCRIVERE MEGLIO
   g⊆m-all
     : ∀ {j R ps}
     → ExpansiveR j R
@@ -511,14 +701,6 @@ theorem6-statement : ∀ {j k : S → S} {R R' : RuleSet} → Type ℓ
 theorem6-statement {j} {k} {R} {R'} =
   (A2026 {j} {k} {R} {R'} ↔ B2026 {j} {k} {R} {R'})
   × (B2026 {j} {k} {R} {R'} ↔ C2026 {j} {k} {R} {R'})
-
-premises-⊆
-  : ∀ {L L' : Entailment} {ps : List Seq}
-  → L ⊆ L'
-  → PremisesHold L ps
-  → PremisesHold L' ps
-premises-⊆ {ps = []} i []ᵃ = []ᵃ
-premises-⊆ {ps = p ∷ ps} i (d ∷ᵃ ds) = i d ∷ᵃ premises-⊆ i ds
 
 lift1-all→
   : ∀ {k : S → S} {L : Entailment} {ps : List Seq}
