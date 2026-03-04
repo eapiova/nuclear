@@ -53,16 +53,28 @@ mutual
   lift-⊆R i (Trans d e) = Trans (lift-⊆R i d) (lift-⊆R i e)
   lift-⊆R i (ByRule rr ds) = ByRule (i rr) (liftAll-⊆R i ds)
 
-record DerivableRule (r : Rule) (L : Entailment) : Type ℓ where
-  constructor mkDerivableRule
-  field
-    derive : PremisesHold L (premises r) → ConclusionHold L r
+RuleHoldsIn : Rule → Entailment → Type ℓ
+RuleHoldsIn r L = PremisesHold L (premises r) → ConclusionHold L r
 
--- We keep admissibility separate from derivability (paper-aligned API choice).
-record AdmissibleRule (r : Rule) (L : Entailment) : Type ℓ where
-  constructor mkAdmissibleRule
+record ModelOf (R : RuleSet) (L : Entailment) : Type ℓ where
+  constructor mkModelOf
   field
-    admit : PremisesHold L (premises r) → ConclusionHold L r
+    modelRefl : ∀ {a} → L (singleton a) a
+    modelTrans
+      : ∀ {U V₁ V₂ a b}
+      → L U a
+      → L (plug₁ V₁ a V₂) b
+      → L (plug V₁ V₂ U) b
+    modelRule : ∀ {r} → R r → RuleHoldsIn r L
+
+deriv-is-model : ∀ {R} → ModelOf R (Deriv R)
+deriv-is-model = mkModelOf Refl Trans ByRule
+
+DerivableRule : Rule → RuleSet → Type (ℓ-suc ℓ)
+DerivableRule r R = ∀ {L} → ModelOf R L → RuleHoldsIn r L
+
+AdmissibleRule : Rule → RuleSet → Type ℓ
+AdmissibleRule r R = RuleHoldsIn r (Deriv R)
 
 RuleSchema : Type (ℓ-suc ℓ)
 RuleSchema = Entailment → Type ℓ
@@ -73,26 +85,20 @@ DerivableSchema = RuleSchema
 AdmissibleSchema : Type (ℓ-suc ℓ)
 AdmissibleSchema = RuleSchema
 
-admissible→derivable
-  : ∀ {r L}
-  → AdmissibleRule r L
-  → DerivableRule r L
-admissible→derivable a = mkDerivableRule (AdmissibleRule.admit a)
-
 derivable→admissible
-  : ∀ {r L}
-  → DerivableRule r L
-  → AdmissibleRule r L
-derivable→admissible d = mkAdmissibleRule (DerivableRule.derive d)
+  : ∀ {r R}
+  → DerivableRule r R
+  → AdmissibleRule r R
+derivable→admissible d = d deriv-is-model
 
 rule-is-derivable
   : ∀ {R r}
   → R r
-  → DerivableRule r (Deriv R)
-rule-is-derivable rr = mkDerivableRule (ByRule rr)
+  → DerivableRule r R
+rule-is-derivable rr m ps = ModelOf.modelRule m rr ps
 
 rule-is-admissible
   : ∀ {R r}
   → R r
-  → AdmissibleRule r (Deriv R)
-rule-is-admissible rr = mkAdmissibleRule (ByRule rr)
+  → AdmissibleRule r R
+rule-is-admissible rr = ByRule rr

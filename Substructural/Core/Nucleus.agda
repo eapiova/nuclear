@@ -160,5 +160,5 @@ rj = mapSuccRule
 
 -- Definition 5: "rule r survives after j" means rj is admissible.
 -- r must be admissible !!!
-SurvivesAfter : (S → S) → Rule → Entailment → Type ℓ
-SurvivesAfter j r L = AdmissibleRule (rj j r) L
+SurvivesAfter : (S → S) → Rule → RuleSet → Type ℓ
+SurvivesAfter j r R = AdmissibleRule (rj j r) R

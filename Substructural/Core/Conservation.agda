@@ -213,79 +213,73 @@ lj+→jstab
 lj+→jstab σ a = σ {U = []} {V = []} {a = a} {b = a} Refl
 
 Rj-admissible : (S → S) → Entailment → Type ℓ
-Rj-admissible j L = ∀ Γ a → AdmissibleRule (mkRule ((Γ ▷ a) ∷ []) (Γ ▷ j a)) L
+Rj-admissible j L = ∀ Γ a → RuleHoldsIn (mkRule ((Γ ▷ a) ∷ []) (Γ ▷ j a)) L
 
 Reflj-admissible : (S → S) → Entailment → Type ℓ
-Reflj-admissible j L = ∀ a → AdmissibleRule (mkRule [] (singleton a ▷ j a)) L
+Reflj-admissible j L = ∀ a → RuleHoldsIn (mkRule [] (singleton a ▷ j a)) L
 
 Lj-admissible : (S → S) → Entailment → Type ℓ
 Lj-admissible j L =
   ∀ U V a b
-  → AdmissibleRule (mkRule ((plug₁ U a V ▷ j b) ∷ []) (plug₁ U (j a) V ▷ j b)) L
+  → RuleHoldsIn (mkRule ((plug₁ U a V ▷ j b) ∷ []) (plug₁ U (j a) V ▷ j b)) L
 
 Transj-admissible : (S → S) → Entailment → Type ℓ
 Transj-admissible j L =
   ∀ W U V a b
-  → AdmissibleRule
+  → RuleHoldsIn
       (mkRule ((W ▷ j a) ∷ (plug₁ U a V ▷ j b) ∷ []) (plug U V W ▷ j b))
       L
 
 jstab-admissible : (S → S) → Entailment → Type ℓ
-jstab-admissible j L = ∀ a → AdmissibleRule (mkRule [] (singleton (j a) ▷ a)) L
+jstab-admissible j L = ∀ a → RuleHoldsIn (mkRule [] (singleton (j a) ▷ a)) L
 
 Lj+-admissible : (S → S) → Entailment → Type ℓ
 Lj+-admissible j L =
   ∀ U V a b
-  → AdmissibleRule (mkRule ((plug₁ U a V ▷ b) ∷ []) (plug₁ U (j a) V ▷ b)) L
+  → RuleHoldsIn (mkRule ((plug₁ U a V ▷ b) ∷ []) (plug₁ U (j a) V ▷ b)) L
 
 rj-adm→reflj-adm
   : ∀ {j R}
   → Rj-admissible j (L⟨ R ⟩)
   → Reflj-admissible j (L⟨ R ⟩)
-rj-adm→reflj-adm ρ a = mkAdmissibleRule λ _ →
-  AdmissibleRule.admit (ρ (singleton a) a) (Refl ∷ᵃ []ᵃ)
+rj-adm→reflj-adm ρ a _ = ρ (singleton a) a (Refl ∷ᵃ []ᵃ)
 
 reflj-adm→rj-adm
   : ∀ {j R}
   → Reflj-admissible j (L⟨ R ⟩)
   → Rj-admissible j (L⟨ R ⟩)
-reflj-adm→rj-adm {j} {R} ρ Γ a =
-  mkAdmissibleRule λ { (d ∷ᵃ []ᵃ) →
-    transportCtx {L = L⟨ R ⟩} {b = j a} (++-unit-r Γ)
-      (Trans {U = Γ} {V₁ = []} {V₂ = []} d (AdmissibleRule.admit (ρ a) []ᵃ)) }
+reflj-adm→rj-adm {j} {R} ρ Γ a (d ∷ᵃ []ᵃ) =
+  transportCtx {L = L⟨ R ⟩} {b = j a} (++-unit-r Γ)
+    (Trans {U = Γ} {V₁ = []} {V₂ = []} d (ρ a []ᵃ))
 
 lj-adm→transj-adm
   : ∀ {j R}
   → Lj-admissible j (L⟨ R ⟩)
   → Transj-admissible j (L⟨ R ⟩)
-lj-adm→transj-adm σ W U V a b =
-  mkAdmissibleRule λ { (d₁ ∷ᵃ d₂ ∷ᵃ []ᵃ) →
-    Trans d₁ (AdmissibleRule.admit (σ U V a b) (d₂ ∷ᵃ []ᵃ)) }
+lj-adm→transj-adm σ W U V a b (d₁ ∷ᵃ d₂ ∷ᵃ []ᵃ) =
+  Trans d₁ (σ U V a b (d₂ ∷ᵃ []ᵃ))
 
 transj-adm→lj-adm
   : ∀ {j R}
   → Transj-admissible j (L⟨ R ⟩)
   → Lj-admissible j (L⟨ R ⟩)
-transj-adm→lj-adm {j} τ U V a b =
-  mkAdmissibleRule λ { (d ∷ᵃ []ᵃ) →
-    AdmissibleRule.admit (τ (singleton (j a)) U V a b) (Refl ∷ᵃ d ∷ᵃ []ᵃ) }
+transj-adm→lj-adm {j} τ U V a b (d ∷ᵃ []ᵃ) =
+  τ (singleton (j a)) U V a b (Refl ∷ᵃ d ∷ᵃ []ᵃ)
 
 jstab-adm→lj+-adm
   : ∀ {j R}
   → jstab-admissible j (L⟨ R ⟩)
   → Lj+-admissible j (L⟨ R ⟩)
-jstab-adm→lj+-adm {j} σ U V a b =
-  mkAdmissibleRule λ { (d ∷ᵃ []ᵃ) →
-    Trans {U = singleton (j a)} {V₁ = U} {V₂ = V}
-      (AdmissibleRule.admit (σ a) []ᵃ)
-      d }
+jstab-adm→lj+-adm {j} σ U V a b (d ∷ᵃ []ᵃ) =
+  Trans {U = singleton (j a)} {V₁ = U} {V₂ = V}
+    (σ a []ᵃ)
+    d
 
 lj+-adm→jstab-adm
   : ∀ {j R}
   → Lj+-admissible j (L⟨ R ⟩)
   → jstab-admissible j (L⟨ R ⟩)
-lj+-adm→jstab-adm σ a =
-  mkAdmissibleRule λ _ → AdmissibleRule.admit (σ [] [] a a) (Refl ∷ᵃ []ᵃ)
+lj+-adm→jstab-adm σ a _ = σ [] [] a a (Refl ∷ᵃ []ᵃ)
 
 -- Lemma 6 (derivable-form).
 lemma6-derivable
@@ -348,7 +342,7 @@ mutual
   lemma8-1-fwd-all
     : ∀ {j R ps}
     → Lj j (L⟨ R ⟩)
-    → (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+    → (∀ {r} → R r → SurvivesAfter j r R)
     → PremisesHold (G⟨ j , R ⟩) ps
     → PremisesHold (L⟨ R ⟩) ps
   lemma8-1-fwd-all {ps = []} lj surv []ᵃ = []ᵃ
@@ -358,7 +352,7 @@ mutual
   lemma8-1-fwd
     : ∀ {j R}
     → Lj j (L⟨ R ⟩)
-    → (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+    → (∀ {r} → R r → SurvivesAfter j r R)
     → G⟨ j , R ⟩ ⊆ L⟨ R ⟩
   lemma8-1-fwd lj surv Refl = Refl
   lemma8-1-fwd lj surv (Trans d d₁) = Trans (lemma8-1-fwd lj surv d) (lemma8-1-fwd lj surv d₁)
@@ -366,28 +360,28 @@ mutual
   lemma8-1-fwd lj surv (ByRule (inr (inl lj-instance)) ds) =
     lj (All-lookup-head (lemma8-1-fwd-all lj surv ds))
   lemma8-1-fwd lj surv (ByRule (inr (inr (rj-instance rr))) ds) =
-    AdmissibleRule.admit (surv rr) (lemma8-1-fwd-all lj surv ds)
+    surv rr (lemma8-1-fwd-all lj surv ds)
 
 lemma8-1-bwd
   : ∀ {j R}
   → G⟨ j , R ⟩ ⊆ L⟨ R ⟩
-  → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+  → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r R)
 lemma8-1-bwd {j} {R} g⊆l =
   ljL , surv
   where
   ljL : Lj j (L⟨ R ⟩)
   ljL {U} {V} {a} {b} d = g⊆l (embed-Lj (lift-base-into-G d))
 
-  surv : ∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩)
-  surv {r} rr = mkAdmissibleRule λ ds →
+  surv : ∀ {r} → R r → SurvivesAfter j r R
+  surv {r} rr ds =
     g⊆l (ByRule (inr (inr (rj-instance rr))) (premises-⊆ lift-base-into-G ds))
 
 lemma8-1
   : ∀ {j R}
-  → (Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩))
+  → (Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r R)
     → G⟨ j , R ⟩ ⊆ L⟨ R ⟩)
     × (G⟨ j , R ⟩ ⊆ L⟨ R ⟩
-      → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r (L⟨ R ⟩)))
+      → Lj j (L⟨ R ⟩) × (∀ {r} → R r → SurvivesAfter j r R))
 lemma8-1 =
   (λ { (lj , surv) → lemma8-1-fwd lj surv })
   , lemma8-1-bwd
@@ -680,7 +674,7 @@ theorem11 {j} {R} {R'} e =
 -- ============================================================================
 
 R'DerivableInMax : ∀ {j : S → S} {R R' : RuleSet} → Type ℓ
-R'DerivableInMax {j} {R} {R'} = ∀ {r} → R' r → DerivableRule r (Max⟨ j , R ⟩)
+R'DerivableInMax {j} {R} {R'} = ∀ {r} → R' r → RuleHoldsIn r (Max⟨ j , R ⟩)
 
 JHomogeneous : ∀ {j k : S → S} {R : RuleSet} → Type ℓ
 JHomogeneous {j} {k} {R} =
@@ -692,7 +686,7 @@ A2026 {j} {k} {R} {R'} = Max⟨ j , R ⟩ ⊆ Lift1 k (L⟨ R ∪R R' ⟩)
 
 B2026 : ∀ {j k : S → S} {R R' : RuleSet} → Type ℓ
 B2026 {j} {k} {R} {R'} =
-  ∀ {r} → (R ∪R R') r → AdmissibleRule r (Lift1 k (L⟨ R ∪R R' ⟩))
+  ∀ {r} → (R ∪R R') r → RuleHoldsIn r (Lift1 k (L⟨ R ∪R R' ⟩))
 
 C2026 : ∀ {j k : S → S} {R R' : RuleSet} → Type ℓ
 C2026 {j} {k} {R} {R'} = Kol1⟨ k , R ⟩ ⊆ L⟨ R ∪R R' ⟩
@@ -718,24 +712,24 @@ lift1-all← {k} {L} {ps = p ∷ ps} (d ∷ᵃ ds) = d ∷ᵃ lift1-all← {k} {
 
 lift1-adm→mapBoth-adm
   : ∀ {k : S → S} {L : Entailment} {r : Rule}
-  → AdmissibleRule r (Lift1 k L)
-  → AdmissibleRule (mapBothRule k r) L
+  → RuleHoldsIn r (Lift1 k L)
+  → RuleHoldsIn (mapBothRule k r) L
 lift1-adm→mapBoth-adm {k} {L} {r} a =
-  mkAdmissibleRule λ ds → AdmissibleRule.admit a (lift1-all← {k} {L} {premises r} ds)
+  λ ds → a (lift1-all← {k} {L} {premises r} ds)
 
 mapBoth-adm→lift1-adm
   : ∀ {k : S → S} {L : Entailment} {r : Rule}
-  → AdmissibleRule (mapBothRule k r) L
-  → AdmissibleRule r (Lift1 k L)
+  → RuleHoldsIn (mapBothRule k r) L
+  → RuleHoldsIn r (Lift1 k L)
 mapBoth-adm→lift1-adm {k} {L} {r} a =
-  mkAdmissibleRule λ ds → AdmissibleRule.admit a (lift1-all→ {k} {L} {premises r} ds)
+  λ ds → a (lift1-all→ {k} {L} {premises r} ds)
 
 lemma2-2026
   : ∀ {k : S → S} {R : RuleSet} {r : Rule}
   → R r
-  → AdmissibleRule r (Lift1 k (Kol1⟨ k , R ⟩))
+  → RuleHoldsIn r (Lift1 k (Kol1⟨ k , R ⟩))
 lemma2-2026 {k} {R} {r} rr =
-  mapBoth-adm→lift1-adm (derivable→admissible (embed-Rk1 {k} {R} {r} rr))
+  mapBoth-adm→lift1-adm (embed-Rk1 {k} {R} {r} rr deriv-is-model)
 
 max-in-R→R∪R'
   : ∀ {j : S → S} {R R' : RuleSet}
@@ -780,14 +774,14 @@ proposition5-2026 {j} {k} {R} {R'} ρ hom max'⊆max max⊆max' hom' lift⊆max 
   , lift⊆max
   , kj⊆max
 
-transport-admissible
+transport-ruleHoldsIn
   : ∀ {r : Rule} {L L' : Entailment}
   → L ⊆ L'
   → L' ⊆ L
-  → AdmissibleRule r L
-  → AdmissibleRule r L'
-transport-admissible to from a =
-  mkAdmissibleRule λ ds → to (AdmissibleRule.admit a (premises-⊆ from ds))
+  → RuleHoldsIn r L
+  → RuleHoldsIn r L'
+transport-ruleHoldsIn to from a ds =
+  to (a (premises-⊆ from ds))
 
 a⇒b-2026
   : ∀ {j k : S → S} {R R' : RuleSet}
@@ -796,11 +790,11 @@ a⇒b-2026
   → A2026 {j} {k} {R} {R'}
   → B2026 {j} {k} {R} {R'}
 a⇒b-2026 {j} {k} {R} {R'} ρ lift⊆max a {r} (inl rr0) =
-  transport-admissible a lift⊆max
-    (derivable→admissible (rule-is-derivable (inl rr0)))
+  transport-ruleHoldsIn a lift⊆max
+    (rule-is-derivable (inl rr0) deriv-is-model)
 a⇒b-2026 {j} {k} {R} {R'} ρ lift⊆max a {r} (inr rr') =
-  transport-admissible a lift⊆max
-    (derivable→admissible (ρ rr'))
+  transport-ruleHoldsIn a lift⊆max
+    (ρ rr')
 
 b⇒a-2026
   : ∀ {j k : S → S} {R R' : RuleSet}

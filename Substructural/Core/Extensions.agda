@@ -169,8 +169,8 @@ lift-base-into-Kol1 = lift-⊆R (inj₁)
 embed-Rk1
   : ∀ {k R r}
   → R r
-  → DerivableRule (mapBothRule k r) (Kol1⟨ k , R ⟩)
-embed-Rk1 rr = mkDerivableRule λ ds → ByRule (inj₂ (inj₁ (rk1-instance rr))) ds
+  → DerivableRule (mapBothRule k r) (Kol1Rules k R)
+embed-Rk1 rr m ds = ModelOf.modelRule m (inj₂ (inj₁ (rk1-instance rr))) ds
 
 embed-Lk-
   : ∀ {k R U V a b}
