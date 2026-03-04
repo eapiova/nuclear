@@ -214,14 +214,14 @@ lift-M {j} {R} {R'} i = lift-⊆R (MjRules-monotone {j} {R} {R'} i)
 -- Lemma 8(2): j is a bi-nucleus over Gj(L).
 bi-on-G
   : ∀ {j R}
-  → BiNucleus j (G⟨ j , R ⟩)
-bi-on-G = mkBiNucleus embed-Lj
+  → BiProgressive j (G⟨ j , R ⟩)
+bi-on-G = mkBiProgressive embed-Lj
 
 -- Lemma 8(2): j is a bi-nucleus over Mj(L).
 bi-on-M
   : ∀ {j R}
-  → BiNucleus j (M⟨ j , R ⟩)
-bi-on-M = mkBiNucleus liftLj
+  → BiProgressive j (M⟨ j , R ⟩)
+bi-on-M = mkBiProgressive liftLj
   where
   liftLj
     : ∀ {j R U V a b}
@@ -238,10 +238,10 @@ destab-M {j} {R} {Γ} {a} d =
   subst (λ X → M⟨ j , R ⟩ X a) (++-unit-r Γ)
     (Trans {U = Γ} {V₁ = []} {V₂ = []} {a = j a} {b = a} d embed-jstab)
 
-raise-M-from-expansiveR
+raise-M-from-expansive
   : ∀ {j R Γ a}
-  → ExpansiveR j R
+  → Expansive j R
   → M⟨ j , R ⟩ Γ a
   → M⟨ j , R ⟩ Γ (j a)
-raise-M-from-expansiveR {j} {R} e =
-  lift-ExpansiveR e (λ rr → inl rr)
+raise-M-from-expansive {j} {R} e =
+  lift-Expansive e (λ rr → inl rr)

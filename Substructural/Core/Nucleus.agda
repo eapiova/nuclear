@@ -6,6 +6,7 @@ open import Substructural.Prelude
 open import Substructural.Core.Judgement S
 open import Substructural.Core.Rules S
 open import Substructural.Core.Derivation S
+open import Cubical.Data.List.Properties using (++-unit-r)
 
 -- Definition 1: rule Rj.
 Rj : (S → S) → RuleSchema
@@ -71,89 +72,128 @@ stable-lj+ = StableNucleus.stableN
 stable→nucleus : ∀ {f L} → StableNucleus f L → Nucleus f L
 stable→nucleus {f} {L} s = mkNucleus (stable-rj s) λ {U} {V} {a} {b} d → stable-lj+ s d
 
-record Expansive (j : S → S) (L : Entailment) : Type ℓ where
-  constructor mkExpansive
-  field
-    expansive : Rj j L
-
--- Extension-stable assumptions used for Proposition 10 / Theorem 11. PENSARE A COSA STAVO FACENDO
-record ExpansiveR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
-  constructor mkExpansiveR
-  field
-    expansiveR : ∀ {R'} → R ⊆R R' → Rj j (Deriv R')
-
 record LeftNucleus (j : S → S) (L : Entailment) : Type ℓ where
   constructor mkLeftNucleus
   field
-    leftNucleus : Ljleft j L
-
-record LeftNucleusR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
-  constructor mkLeftNucleusR
-  field
-    leftNucleusR : ∀ {R'} → R ⊆R R' → Ljleft j (Deriv R')
+    expansiveLN : Rj j L
+    progressiveLN : Ljleft j L
 
 record RightNucleus (j : S → S) (L : Entailment) : Type ℓ where
   constructor mkRightNucleus
   field
-    rightNucleus : Ljright j L
-
-record RightNucleusR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
-  constructor mkRightNucleusR
-  field
-    rightNucleusR : ∀ {R'} → R ⊆R R' → Ljright j (Deriv R')
+    expansiveRN : Rj j L
+    progressiveRN : Ljright j L
 
 record BiNucleus (j : S → S) (L : Entailment) : Type ℓ where
   constructor mkBiNucleus
   field
-    biNucleus : Lj j L
+    expansiveBN : Rj j L
+    progressiveBN : Lj j L
 
-record BiNucleusR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
-  constructor mkBiNucleusR
+leftNucleus-rj : ∀ {j L} → LeftNucleus j L → Rj j L
+leftNucleus-rj = LeftNucleus.expansiveLN
+
+leftNucleus-ljleft : ∀ {j L} → LeftNucleus j L → Ljleft j L
+leftNucleus-ljleft = LeftNucleus.progressiveLN
+
+rightNucleus-rj : ∀ {j L} → RightNucleus j L → Rj j L
+rightNucleus-rj = RightNucleus.expansiveRN
+
+rightNucleus-ljright : ∀ {j L} → RightNucleus j L → Ljright j L
+rightNucleus-ljright = RightNucleus.progressiveRN
+
+biNucleus-rj : ∀ {j L} → BiNucleus j L → Rj j L
+biNucleus-rj = BiNucleus.expansiveBN
+
+biNucleus-lj : ∀ {j L} → BiNucleus j L → Lj j L
+biNucleus-lj = BiNucleus.progressiveBN
+
+biNucleus→nucleus : ∀ {j L} → BiNucleus j L → Nucleus j L
+biNucleus→nucleus b = mkNucleus (biNucleus-rj b) (biNucleus-lj b)
+
+nucleus→biNucleus : ∀ {j L} → Nucleus j L → BiNucleus j L
+nucleus→biNucleus n = mkBiNucleus (nucleus-rj n) (nucleus-lj n)
+
+-- Expansiveness over the base derivability relation.
+record Expansive (j : S → S) (R : RuleSet) : Type ℓ where
+  constructor mkExpansive
   field
-    biNucleusR : ∀ {R'} → R ⊆R R' → Lj j (Deriv R')
+    expansive : Rj j (Deriv R)
+
+record LeftProgressive (j : S → S) (L : Entailment) : Type ℓ where
+  constructor mkLeftProgressive
+  field
+    leftProgressive : Ljleft j L
+
+record LeftProgressiveR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
+  constructor mkLeftProgressiveR
+  field
+    leftProgressiveR : ∀ {R'} → R ⊆R R' → Ljleft j (Deriv R')
+
+record RightProgressive (j : S → S) (L : Entailment) : Type ℓ where
+  constructor mkRightProgressive
+  field
+    rightProgressive : Ljright j L
+
+record RightProgressiveR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
+  constructor mkRightProgressiveR
+  field
+    rightProgressiveR : ∀ {R'} → R ⊆R R' → Ljright j (Deriv R')
+
+record BiProgressive (j : S → S) (L : Entailment) : Type ℓ where
+  constructor mkBiProgressive
+  field
+    biProgressive : Lj j L
+
+record BiProgressiveR (j : S → S) (R : RuleSet) : Type (ℓ-suc ℓ) where
+  constructor mkBiProgressiveR
+  field
+    biProgressiveR : ∀ {R'} → R ⊆R R' → Lj j (Deriv R')
 
 
 -- ESPANSIVE needed for NUCLEI
 
-onBase-ExpansiveR : ∀ {j R} → ExpansiveR j R → Rj j (Deriv R)
-onBase-ExpansiveR e = ExpansiveR.expansiveR e (λ r → r)
+onBase-Expansive : ∀ {j R} → Expansive j R → Rj j (Deriv R)
+onBase-Expansive e = Expansive.expansive e
 
-lift-ExpansiveR
+lift-Expansive
   : ∀ {j R R'}
-  → ExpansiveR j R
+  → Expansive j R
   → R ⊆R R'
   → Rj j (Deriv R')
-lift-ExpansiveR e i = ExpansiveR.expansiveR e i
+lift-Expansive {j} {R} {R'} e i {Γ} {a} d =
+  subst (λ X → Deriv R' X (j a)) (++-unit-r Γ)
+    (Trans {U = Γ} {V₁ = []} {V₂ = []} d (lift-⊆R i (Expansive.expansive e Refl)))
 
-onBase-LeftNucleusR : ∀ {j R} → LeftNucleusR j R → Ljleft j (Deriv R)
-onBase-LeftNucleusR n = LeftNucleusR.leftNucleusR n (λ r → r)
+onBase-LeftProgressiveR : ∀ {j R} → LeftProgressiveR j R → Ljleft j (Deriv R)
+onBase-LeftProgressiveR n = LeftProgressiveR.leftProgressiveR n (λ r → r)
 
-lift-LeftNucleusR
+lift-LeftProgressiveR
   : ∀ {j R R'}
-  → LeftNucleusR j R
+  → LeftProgressiveR j R
   → R ⊆R R'
   → Ljleft j (Deriv R')
-lift-LeftNucleusR n i = LeftNucleusR.leftNucleusR n i
+lift-LeftProgressiveR n i = LeftProgressiveR.leftProgressiveR n i
 
-onBase-RightNucleusR : ∀ {j R} → RightNucleusR j R → Ljright j (Deriv R)
-onBase-RightNucleusR n = RightNucleusR.rightNucleusR n (λ r → r)
+onBase-RightProgressiveR : ∀ {j R} → RightProgressiveR j R → Ljright j (Deriv R)
+onBase-RightProgressiveR n = RightProgressiveR.rightProgressiveR n (λ r → r)
 
-lift-RightNucleusR
+lift-RightProgressiveR
   : ∀ {j R R'}
-  → RightNucleusR j R
+  → RightProgressiveR j R
   → R ⊆R R'
   → Ljright j (Deriv R')
-lift-RightNucleusR n i = RightNucleusR.rightNucleusR n i
+lift-RightProgressiveR n i = RightProgressiveR.rightProgressiveR n i
 
-onBase-BiNucleusR : ∀ {j R} → BiNucleusR j R → Lj j (Deriv R)
-onBase-BiNucleusR n = BiNucleusR.biNucleusR n (λ r → r)
+onBase-BiProgressiveR : ∀ {j R} → BiProgressiveR j R → Lj j (Deriv R)
+onBase-BiProgressiveR n = BiProgressiveR.biProgressiveR n (λ r → r)
 
-lift-BiNucleusR
+lift-BiProgressiveR
   : ∀ {j R R'}
-  → BiNucleusR j R
+  → BiProgressiveR j R
   → R ⊆R R'
   → Lj j (Deriv R')
-lift-BiNucleusR n i = BiNucleusR.biNucleusR n i
+lift-BiProgressiveR n i = BiProgressiveR.biProgressiveR n i
 
 rj : (S → S) → Rule → Rule
 rj = mapSuccRule

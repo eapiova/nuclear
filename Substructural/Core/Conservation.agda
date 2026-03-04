@@ -85,16 +85,16 @@ tail→head
   → L (prefix a U) b
 tail→head {L} {a} {U} {b} c d = bubble-left {L = L} {a = a} {b = b} c [] U d
 
-bi→left : ∀ {j L} → BiNucleus j L → LeftNucleus j L
-bi→left n = mkLeftNucleus λ {U} {a} {b} d →
-  BiNucleus.biNucleus n {U = U} {V = []} {a = a} {b = b} d
+bi→left : ∀ {j L} → BiProgressive j L → LeftProgressive j L
+bi→left n = mkLeftProgressive λ {U} {a} {b} d →
+  BiProgressive.biProgressive n {U = U} {V = []} {a = a} {b = b} d
 
-bi→right : ∀ {j L} → BiNucleus j L → RightNucleus j L
-bi→right n = mkRightNucleus λ {U} {a} {b} d →
-  BiNucleus.biNucleus n {U = []} {V = U} {a = a} {b = b} d
+bi→right : ∀ {j L} → BiProgressive j L → RightProgressive j L
+bi→right n = mkRightProgressive λ {U} {a} {b} d →
+  BiProgressive.biProgressive n {U = []} {V = U} {a = a} {b = b} d
 
-left→bi : ∀ {j L} → Comm L → LeftNucleus j L → BiNucleus j L
-left→bi {j} {L} c n = mkBiNucleus liftL
+left→bi : ∀ {j L} → Comm L → LeftProgressive j L → BiProgressive j L
+left→bi {j} {L} c n = mkBiProgressive liftL
   where
   liftL
     : ∀ {U V a b}
@@ -103,12 +103,12 @@ left→bi {j} {L} c n = mkBiNucleus liftL
   liftL {U} {V} {a} {b} d =
     bubble-left {L = L} {a = j a} {b = j b} c U V
       (transportCtx {L = L} {b = j b} (++-assoc U V ((j a) ∷ []))
-        (LeftNucleus.leftNucleus n
+        (LeftProgressive.leftProgressive n
           (transportCtx {L = L} {b = j b} (sym (++-assoc U V (a ∷ [])))
             (bubble-right {L = L} {a = a} {b = j b} c U V d))))
 
-right→bi : ∀ {j L} → Comm L → RightNucleus j L → BiNucleus j L
-right→bi {j} {L} c n = mkBiNucleus liftR
+right→bi : ∀ {j L} → Comm L → RightProgressive j L → BiProgressive j L
+right→bi {j} {L} c n = mkBiProgressive liftR
   where
   liftR
     : ∀ {U V a b}
@@ -118,37 +118,49 @@ right→bi {j} {L} c n = mkBiNucleus liftR
     bubble-left {L = L} {a = j a} {b = j b} c U V
       (transportCtx {L = L} {b = j b} (++-assoc U V ((j a) ∷ []))
         (head→tail {L = L} {a = j a} {U = U ++ V} {b = j b} c
-          (RightNucleus.rightNucleus n
+          (RightProgressive.rightProgressive n
             (tail→head {L = L} {a = a} {U = U ++ V} {b = j b} c
               (transportCtx {L = L} {b = j b} (sym (++-assoc U V (a ∷ [])))
                 (bubble-right {L = L} {a = a} {b = j b} c U V d))))))
 
-left↔right : ∀ {j L} → Comm L → LeftNucleus j L ↔ RightNucleus j L
+left↔right : ∀ {j L} → Comm L → LeftProgressive j L ↔ RightProgressive j L
 left↔right {j} {L} c = intro toLR fromLR
   where
-  toLR : LeftNucleus j L → RightNucleus j L
+  toLR : LeftProgressive j L → RightProgressive j L
   toLR n = bi→right (left→bi c n)
 
-  fromLR : RightNucleus j L → LeftNucleus j L
+  fromLR : RightProgressive j L → LeftProgressive j L
   fromLR n = bi→left (right→bi c n)
 
-left↔bi : ∀ {j L} → Comm L → LeftNucleus j L ↔ BiNucleus j L
+left↔bi : ∀ {j L} → Comm L → LeftProgressive j L ↔ BiProgressive j L
 left↔bi {j} {L} c = intro toLB fromLB
   where
-  toLB : LeftNucleus j L → BiNucleus j L
+  toLB : LeftProgressive j L → BiProgressive j L
   toLB n = left→bi c n
 
-  fromLB : BiNucleus j L → LeftNucleus j L
+  fromLB : BiProgressive j L → LeftProgressive j L
   fromLB = bi→left
 
-right↔bi : ∀ {j L} → Comm L → RightNucleus j L ↔ BiNucleus j L
+right↔bi : ∀ {j L} → Comm L → RightProgressive j L ↔ BiProgressive j L
 right↔bi {j} {L} c = intro toRB fromRB
   where
-  toRB : RightNucleus j L → BiNucleus j L
+  toRB : RightProgressive j L → BiProgressive j L
   toRB n = right→bi c n
 
-  fromRB : BiNucleus j L → RightNucleus j L
+  fromRB : BiProgressive j L → RightProgressive j L
   fromRB = bi→right
+
+lemma3-progressive
+  : ∀ {j L}
+  → (BiProgressive j L → LeftProgressive j L × RightProgressive j L)
+  × (Comm L
+  → (LeftProgressive j L ↔ RightProgressive j L)
+    × (LeftProgressive j L ↔ BiProgressive j L)
+    × (RightProgressive j L ↔ BiProgressive j L))
+lemma3-progressive =
+  (λ b → bi→left b , bi→right b)
+  ,
+  (λ c → left↔right c , left↔bi c , right↔bi c)
 
 -- Lemma 3:
 -- (1) bi-nucleus implies left and right nuclei,
@@ -160,10 +172,47 @@ lemma3
   → (LeftNucleus j L ↔ RightNucleus j L)
     × (LeftNucleus j L ↔ BiNucleus j L)
     × (RightNucleus j L ↔ BiNucleus j L))
-lemma3 =
-  (λ b → bi→left b , bi→right b)
+lemma3 {j} {L} =
+  (λ b →
+      mkLeftNucleus (biNucleus-rj b)
+        (LeftProgressive.leftProgressive
+          (bi→left {j} {L} (mkBiProgressive {j} {L} (biNucleus-lj b))))
+    ,
+      mkRightNucleus (biNucleus-rj b)
+        (RightProgressive.rightProgressive
+          (bi→right {j} {L} (mkBiProgressive {j} {L} (biNucleus-lj b)))))
   ,
-  (λ c → left↔right c , left↔bi c , right↔bi c)
+  (λ c →
+      intro
+        (λ l → mkRightNucleus (leftNucleus-rj l)
+           (RightProgressive.rightProgressive
+             (to (left↔right {j} {L} c)
+               (mkLeftProgressive {j} {L} (leftNucleus-ljleft l)))))
+        (λ r → mkLeftNucleus (rightNucleus-rj r)
+           (LeftProgressive.leftProgressive
+             (from (left↔right {j} {L} c)
+               (mkRightProgressive {j} {L} (rightNucleus-ljright r)))))
+    ,
+      intro
+        (λ l → mkBiNucleus (leftNucleus-rj l)
+           (BiProgressive.biProgressive
+             (to (left↔bi {j} {L} c)
+               (mkLeftProgressive {j} {L} (leftNucleus-ljleft l)))))
+        (λ b → mkLeftNucleus (biNucleus-rj b)
+           (LeftProgressive.leftProgressive
+             (from (left↔bi {j} {L} c)
+               (mkBiProgressive {j} {L} (biNucleus-lj b)))))
+    ,
+      intro
+        (λ r → mkBiNucleus (rightNucleus-rj r)
+           (BiProgressive.biProgressive
+             (to (right↔bi {j} {L} c)
+               (mkRightProgressive {j} {L} (rightNucleus-ljright r)))))
+        (λ b → mkRightNucleus (biNucleus-rj b)
+           (RightProgressive.rightProgressive
+             (from (right↔bi {j} {L} c)
+               (mkBiProgressive {j} {L} (biNucleus-lj b)))))
+  )
 
 -- Proposition 4: base entailment embeds into any rule-set extension.
 proposition4
@@ -313,17 +362,22 @@ lemma6 = lemma6-derivable
 -- Lemma 8 package (items 1-4 in scope for this milestone).
 lemma8
   : ∀ {j R}
-  → (L⟨ R ⟩ ⊆ G⟨ j , R ⟩) -- RISCRIVERE
-    × (L⟨ R ⟩ ⊆ M⟨ j , R ⟩) -- RISCRIVERE
+  → Expansive j R
+  → (L⟨ R ⟩ ⊆ G⟨ j , R ⟩)
+    × (L⟨ R ⟩ ⊆ M⟨ j , R ⟩)
     × BiNucleus j (G⟨ j , R ⟩)
     × BiNucleus j (M⟨ j , R ⟩)
     × ((∀ {R'} → R ⊆R R' → G⟨ j , R ⟩ ⊆ G⟨ j , R' ⟩)
       × (∀ {R'} → R ⊆R R' → M⟨ j , R ⟩ ⊆ M⟨ j , R' ⟩))
-lemma8 =
+lemma8 {j} {R} e =
   lift-base-into-G
   , lift-base-into-M
-  , bi-on-G
-  , bi-on-M
+  , mkBiNucleus
+      (lift-Expansive e (λ rr → inl rr))
+      (BiProgressive.biProgressive bi-on-G)
+  , mkBiNucleus
+      (lift-Expansive e (λ rr → inl rr))
+      (BiProgressive.biProgressive bi-on-M)
   , (lift-G , lift-M)
 
 premises-⊆
@@ -390,7 +444,7 @@ mutual
 
   lemma8-3-fwd-all
     : ∀ {j R ps}
-    → BiNucleusR j R
+    → BiProgressiveR j R
     → PremisesHold (G⟨ j , R ⟩) ps
     → PremisesHold (Deriv (R ∪R RjRules j R)) ps
   lemma8-3-fwd-all {ps = []} bn []ᵃ = []ᵃ
@@ -399,13 +453,13 @@ mutual
 
   lemma8-3-fwd
     : ∀ {j R}
-    → BiNucleusR j R
+    → BiProgressiveR j R
     → G⟨ j , R ⟩ ⊆ Deriv (R ∪R RjRules j R)
   lemma8-3-fwd bn Refl = Refl
   lemma8-3-fwd bn (Trans d d₁) = Trans (lemma8-3-fwd bn d) (lemma8-3-fwd bn d₁)
   lemma8-3-fwd bn (ByRule (inl rr) ds) = ByRule (inl rr) (lemma8-3-fwd-all bn ds)
   lemma8-3-fwd {j} {R} bn (ByRule (inr (inl lj-instance)) ds) =
-    lift-BiNucleusR bn (λ rr → inl rr) (All-lookup-head (lemma8-3-fwd-all bn ds))
+    lift-BiProgressiveR bn (λ rr → inl rr) (All-lookup-head (lemma8-3-fwd-all bn ds))
   lemma8-3-fwd bn (ByRule (inr (inr (rj-instance rr))) ds) =
     ByRule (inr (rj-instance rr)) (lemma8-3-fwd-all bn ds)
 
@@ -420,7 +474,7 @@ lemma8-3-bwd {j} {R} = lift-⊆R embed
 
 lemma8-3
   : ∀ {j R}
-  → BiNucleusR j R
+  → BiProgressiveR j R
   → (G⟨ j , R ⟩ ⊆ Deriv (R ∪R RjRules j R))
     × (Deriv (R ∪R RjRules j R) ⊆ G⟨ j , R ⟩)
 lemma8-3 bn = lemma8-3-fwd bn , lemma8-3-bwd
@@ -505,10 +559,9 @@ destab-mapSuccAll {j} {R} {ps = p ∷ ps} (d ∷ᵃ ds) =
 
 -- Core internal step for Proposition 10: Gj(L) ⊆ Mj(L).
 mutual
--- SCRIVERE MEGLIO
   g⊆m-all
     : ∀ {j R ps}
-    → ExpansiveR j R
+    → Expansive j R
     → PremisesHold (G⟨ j , R ⟩) ps
     → PremisesHold (M⟨ j , R ⟩) ps
   g⊆m-all {ps = []} e []ᵃ = []ᵃ
@@ -516,7 +569,7 @@ mutual
 
   g⊆m
     : ∀ {j R}
-    → ExpansiveR j R
+    → Expansive j R
     → G⟨ j , R ⟩ ⊆ M⟨ j , R ⟩
   g⊆m e Refl = Refl
   g⊆m e (Trans d d₁) = Trans (g⊆m e d) (g⊆m e d₁)
@@ -526,7 +579,7 @@ mutual
       (λ a → jstab-in-M {j = j} {R = R} {a = a})
       (All-lookup-head (g⊆m-all e ds))
   g⊆m {j} {R} e (ByRule (inr (inr (rj-instance rr))) ds) =
-    raise-M-from-expansiveR {j = j} {R = R} e
+    raise-M-from-expansive {j = j} {R = R} e
       (ByRule (inl rr) (destab-mapSuccAll (g⊆m-all e ds)))
 
 kj⊆m
@@ -538,19 +591,19 @@ kj⊆m {j} {R} {Γ} {a} d =
 -- Proposition 10: four inclusions proved internally.
 proposition10
   : ∀ {j R}
-  → ExpansiveR j R
+  → Expansive j R
   → (L⟨ R ⟩ ⊆ Kj j (L⟨ R ⟩))
     × (L⟨ R ⟩ ⊆ G⟨ j , R ⟩)
     × (G⟨ j , R ⟩ ⊆ M⟨ j , R ⟩)
     × (Kj j (L⟨ R ⟩) ⊆ M⟨ j , R ⟩)
-proposition10 {j} {R} e with lemma8 {j} {R}
+proposition10 {j} {R} e with lemma8 {j} {R} e
 ... | l⊆g , _ , _ , _ , _ =
-  onBase-ExpansiveR e , l⊆g , g⊆m e , kj⊆m
+  onBase-Expansive e , l⊆g , g⊆m e , kj⊆m
 
 -- Theorem 11 (Conservation), clauses (1)-(4).
 theorem11
   : ∀ {j R R'}
-  → ExpansiveR j R
+  → Expansive j R
   → (L⟨ R ∪R R' ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩))
     × ((Kj j (L⟨ R ∪R R' ⟩) ⊆ L⟨ R ∪R R' ⟩) ↔ (M⟨ j , R ⟩ ⊆ L⟨ R ∪R R' ⟩))
     × ((Kj j (L⟨ R ∪R R' ⟩) ⊆ M⟨ j , R ⟩) ↔ (L⟨ R ∪R R' ⟩ ⊆ M⟨ j , R ⟩))
@@ -574,7 +627,7 @@ theorem11 {j} {R} {R'} e =
   G = G⟨ j , R ⟩
 
   l'⊆k : L' ⊆ K'
-  l'⊆k = lift-ExpansiveR e (λ rr → inl rr)
+  l'⊆k = lift-Expansive e (λ rr → inl rr)
 
   c2-to : K' ⊆ L' → M ⊆ L'
   c2-to k⊆l' = m→l'
@@ -661,7 +714,7 @@ theorem11 {j} {R} {R'} e =
       : ∀ {Γ a}
       → M Γ a
       → G Γ (j a)
-    m→gj Refl = lift-ExpansiveR e (λ rr → inl rr) Refl
+    m→gj Refl = lift-Expansive e (λ rr → inl rr) Refl
     m→gj (Trans d d₁) = Trans (m→gj d) (embed-Lj (m→gj d₁))
     m→gj (ByRule (inl rr) ds) = ByRule (inr (inr (rj-instance rr))) (m→gj-all ds)
     m→gj (ByRule (inr jstab-instance) ds) = Refl
@@ -822,7 +875,7 @@ theorem6 {j} {k} {R} {R'} ρ hom' lift⊆max b⇒a ab⇒c c⇒a =
 
 theorem6-k=j-compatible
   : ∀ {j : S → S} {R R' : RuleSet}
-  → ExpansiveR j R
+  → Expansive j R
   → (M⟨ j , R ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩))
     ↔ (G⟨ j , R ⟩ ⊆ L⟨ R ∪R R' ⟩)
 theorem6-k=j-compatible e = snd (snd (snd (theorem11 e)))
