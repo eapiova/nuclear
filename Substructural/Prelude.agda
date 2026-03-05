@@ -1,5 +1,3 @@
-{-# OPTIONS --safe --cubical --guardedness -WnoUnsupportedIndexedMatch #-}
-
 module Substructural.Prelude where
 
 open import Cubical.Foundations.Prelude public hiding (_▷_)

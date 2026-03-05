@@ -2,7 +2,4 @@ name: nuclear
 include: .
 depend:
   cubical-0.9
-flags:
-  --cubical
-  --guardedness
-  -WnoUnsupportedIndexedMatch
+flags: --safe --cubical --no-import-sorts -WnoUnsupportedIndexedMatch --guardedness

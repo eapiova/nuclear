@@ -1,5 +1,3 @@
-{-# OPTIONS --safe --cubical --guardedness -WnoUnsupportedIndexedMatch #-}
-
 module Substructural.Everything where
 
 -- Public surface for the Section 2 milestone
@@ -11,3 +9,13 @@ open import Substructural.Core.Derivation public
 open import Substructural.Core.Nucleus public
 open import Substructural.Core.Extensions public
 open import Substructural.Core.Conservation public
+open import Substructural.Core.Diagrams public
+
+-- Section 3 layer (FL and structural extensions).
+open import Substructural.FL.Formula public
+open import Substructural.FL.Rules public
+open import Substructural.FL.Basic public
+open import Substructural.FL.Shifts public
+open import Substructural.FL.Glivenko public
+open import Substructural.FL.Open public
+open import Substructural.FL.Lemma17 public

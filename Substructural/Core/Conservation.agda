@@ -1,6 +1,6 @@
-{-# OPTIONS --safe --cubical --guardedness -WnoUnsupportedIndexedMatch #-}
+open import Cubical.Core.Primitives
 
-module Substructural.Core.Conservation {ℓ} (S : Set ℓ) where
+module Substructural.Core.Conservation {ℓ} (S : Type ℓ) where
 
 open import Substructural.Prelude
 open import Substructural.Core.Judgement S
@@ -588,6 +588,26 @@ kj⊆m
 kj⊆m {j} {R} {Γ} {a} d =
   destab-M {j = j} {R = R} (lift-base-into-M {j = j} {R = R} d)
 
+mutual
+
+  m→gj-all
+    : ∀ {j R ps}
+    → Expansive j R
+    → PremisesHold (M⟨ j , R ⟩) ps
+    → PremisesHold (G⟨ j , R ⟩) (map (mapSucc j) ps)
+  m→gj-all {ps = []} e []ᵃ = []ᵃ
+  m→gj-all {j} {R} {ps = p ∷ ps} e (d ∷ᵃ ds) = m→gj e d ∷ᵃ m→gj-all e ds
+
+  m→gj
+    : ∀ {j R Γ a}
+    → Expansive j R
+    → M⟨ j , R ⟩ Γ a
+    → G⟨ j , R ⟩ Γ (j a)
+  m→gj e Refl = lift-Expansive e (λ rr → inl rr) Refl
+  m→gj e (Trans d d₁) = Trans (m→gj e d) (embed-Lj (m→gj e d₁))
+  m→gj e (ByRule (inl rr) ds) = ByRule (inr (inr (rj-instance rr))) (m→gj-all e ds)
+  m→gj e (ByRule (inr jstab-instance) ds) = Refl
+
 -- Proposition 10: four inclusions proved internally.
 proposition10
   : ∀ {j R}
@@ -701,26 +721,8 @@ theorem11 {j} {R} {R'} e =
             (g⊆k d)
             (jj→j (Seq.obj (conclusion r))))
 
-  mutual
-
-    m→gj-all
-      : ∀ {ps}
-      → PremisesHold M ps
-      → PremisesHold G (map (mapSucc j) ps)
-    m→gj-all {ps = []} []ᵃ = []ᵃ
-    m→gj-all {ps = p ∷ ps} (d ∷ᵃ ds) = m→gj d ∷ᵃ m→gj-all ds
-
-    m→gj
-      : ∀ {Γ a}
-      → M Γ a
-      → G Γ (j a)
-    m→gj Refl = lift-Expansive e (λ rr → inl rr) Refl
-    m→gj (Trans d d₁) = Trans (m→gj d) (embed-Lj (m→gj d₁))
-    m→gj (ByRule (inl rr) ds) = ByRule (inr (inr (rj-instance rr))) (m→gj-all ds)
-    m→gj (ByRule (inr jstab-instance) ds) = Refl
-
   c4-from : G ⊆ L' → M ⊆ K'
-  c4-from g⊆l' d = g⊆l' (m→gj d)
+  c4-from g⊆l' d = g⊆l' (m→gj e d)
 
 -- ============================================================================
 -- CSL 2026 layer (Theorem 6-oriented API)

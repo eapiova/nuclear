@@ -1,6 +1,6 @@
-{-# OPTIONS --safe --cubical --guardedness -WnoUnsupportedIndexedMatch #-}
+open import Cubical.Core.Primitives
 
-module Substructural.Core.Extensions {ℓ} (S : Set ℓ) where
+module Substructural.Core.Extensions {ℓ} (S : Type ℓ) where
 
 open import Substructural.Prelude
 open import Substructural.Core.Judgement S
