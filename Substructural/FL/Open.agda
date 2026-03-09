@@ -5,6 +5,7 @@ open import Substructural.FL.Formula
 open import Substructural.FL.Rules
 open import Substructural.FL.Basic
 open import Substructural.FL.Shifts
+open import Substructural.FL.Theorem19
 open import Substructural.Core.Judgement Formula
 open import Substructural.Core.Rules Formula
 open import Substructural.Core.Derivation Formula
@@ -27,6 +28,16 @@ RoR {Γ} {a} d =
   d0 =
     ByRule
       (R· {U = singleton `0} {V = Γ} {a = `0} {b = a})
+      (Refl ∷ᵃ d ∷ᵃ []ᵃ)
+
+RoR-R : ∀ {R'} → FLRules ⊆R R' → Rj oR (Deriv R')
+RoR-R iFL {Γ} {a} d =
+  ByRule (iFL (R⊸ {U = Γ} {a = `0} {b = `0 `· a})) (d0 ∷ᵃ []ᵃ)
+  where
+  d0 : Deriv _ (`0 ∷ Γ) (`0 `· a)
+  d0 =
+    ByRule
+      (iFL (R· {U = singleton `0} {V = Γ} {a = `0} {b = a}))
       (Refl ∷ᵃ d ∷ᵃ []ᵃ)
 
 LoR-right-helper : ∀ {a b} → FL (oR a ∷ (a `⊸ oR b) ∷ []) (oR b)
@@ -77,6 +88,57 @@ LoR-right-helper {a} {b} =
         {c = `0 `· b})
       (Refl ∷ᵃ d3 ∷ᵃ []ᵃ)
 
+LoR-right-helper-R : ∀ {R'} → FLRules ⊆R R' → ∀ {a b} → Deriv R' (oR a ∷ (a `⊸ oR b) ∷ []) (oR b)
+LoR-right-helper-R iFL {a} {b} =
+  ByRule
+    (iFL (R⊸ {U = oR a ∷ (a `⊸ oR b) ∷ []} {a = `0} {b = `0 `· b}))
+    (d4 ∷ᵃ []ᵃ)
+  where
+  d1 : Deriv _ (`0 ∷ oR b ∷ []) (`0 `· b)
+  d1 =
+    ByRule
+      (iFL
+        (L⊸
+          {U = singleton `0}
+          {V = []}
+          {W = []}
+          {a = `0}
+          {b = `0 `· b}
+          {c = `0 `· b}))
+      (Refl ∷ᵃ Refl ∷ᵃ []ᵃ)
+
+  d2 : Deriv _ (`0 ∷ a ∷ (a `⊸ oR b) ∷ []) (`0 `· b)
+  d2 =
+    ByRule
+      (iFL
+        (L⊸
+          {U = singleton a}
+          {V = []}
+          {W = singleton `0}
+          {a = a}
+          {b = oR b}
+          {c = `0 `· b}))
+      (Refl ∷ᵃ d1 ∷ᵃ []ᵃ)
+
+  d3 : Deriv _ ((`0 `· a) ∷ (a `⊸ oR b) ∷ []) (`0 `· b)
+  d3 =
+    ByRule
+      (iFL (L· {U = []} {V = singleton (a `⊸ oR b)} {a = `0} {b = a} {c = `0 `· b}))
+      (d2 ∷ᵃ []ᵃ)
+
+  d4 : Deriv _ (`0 ∷ oR a ∷ (a `⊸ oR b) ∷ []) (`0 `· b)
+  d4 =
+    ByRule
+      (iFL
+        (L⊸
+          {U = singleton `0}
+          {V = singleton (a `⊸ oR b)}
+          {W = []}
+          {a = `0}
+          {b = `0 `· a}
+          {c = `0 `· b}))
+      (Refl ∷ᵃ d3 ∷ᵃ []ᵃ)
+
 LoR-right : Ljright oR FL
 LoR-right {U} {a} {b} d =
   transportCtx {L = FL} (cong ((oR a) ∷_) (++-unit-r U))
@@ -84,6 +146,14 @@ LoR-right {U} {a} {b} d =
   where
   d1 : FL U (a `⊸ oR b)
   d1 = ByRule (R⊸ {U = U} {a = a} {b = oR b}) (d ∷ᵃ []ᵃ)
+
+LoR-right-R : ∀ {R'} → FLRules ⊆R R' → Ljright oR (Deriv R')
+LoR-right-R iFL {U} {a} {b} d =
+  transportCtx {L = Deriv _} (cong ((oR a) ∷_) (++-unit-r U))
+    (Trans {U = U} {V₁ = singleton (oR a)} {V₂ = []} d1 (LoR-right-helper-R iFL))
+  where
+  d1 : Deriv _ U (a `⊸ oR b)
+  d1 = ByRule (iFL (R⊸ {U = U} {a = a} {b = oR b})) (d ∷ᵃ []ᵃ)
 
 oR-right-nucleus : RightNucleus oR FL
 oR-right-nucleus = mkRightNucleus RoR LoR-right
@@ -94,6 +164,13 @@ RoL {Γ} {a} d =
   where
   d0 : FL (Γ ++ (`0 ∷ [])) (a `· `0)
   d0 = ByRule (R· {U = Γ} {V = singleton `0} {a = a} {b = `0}) (d ∷ᵃ Refl ∷ᵃ []ᵃ)
+
+RoL-R : ∀ {R'} → FLRules ⊆R R' → Rj oL (Deriv R')
+RoL-R iFL {Γ} {a} d =
+  ByRule (iFL (R› {U = Γ} {a = `0} {b = a `· `0})) (d0 ∷ᵃ []ᵃ)
+  where
+  d0 : Deriv _ (Γ ++ (`0 ∷ [])) (a `· `0)
+  d0 = ByRule (iFL (R· {U = Γ} {V = singleton `0} {a = a} {b = `0})) (d ∷ᵃ Refl ∷ᵃ []ᵃ)
 
 oL-expansive : Rj oL FL
 oL-expansive = RoL
@@ -138,11 +215,63 @@ LoL-left {U} {a} {b} d =
   d4 : FL ((suffix U (oL a)) ++ (`0 ∷ [])) (b `· `0)
   d4 = transportCtx {L = FL} (sym p2) d3
 
+LoL-left-R : ∀ {R'} → FLRules ⊆R R' → Ljleft oL (Deriv R')
+LoL-left-R iFL {U} {a} {b} d =
+  ByRule (iFL (R› {U = suffix U (oL a)} {a = `0} {b = b `· `0})) (d4 ∷ᵃ []ᵃ)
+  where
+  d0 : Deriv _ ((suffix U a) ++ (`0 ∷ [])) (b `· `0)
+  d0 = R›-invert iFL d
+
+  p1 : ((suffix U a) ++ (`0 ∷ [])) ≡ U ++ (a ∷ `0 ∷ [])
+  p1 = ++-assoc U (a ∷ []) (`0 ∷ [])
+
+  d1 : Deriv _ (U ++ (a ∷ `0 ∷ [])) (b `· `0)
+  d1 = transportCtx {L = Deriv _} p1 d0
+
+  d2 : Deriv _ (U ++ ((a `· `0) ∷ [])) (b `· `0)
+  d2 =
+    ByRule
+      (iFL (L· {U = U} {V = []} {a = a} {b = `0} {c = b `· `0}))
+      (d1 ∷ᵃ []ᵃ)
+
+  d3 : Deriv _ (U ++ (oL a ∷ `0 ∷ [])) (b `· `0)
+  d3 =
+    Trans
+      {U = oL a ∷ `0 ∷ []}
+      {V₁ = U}
+      {V₂ = []}
+      (lift-⊆R iFL (mp› {a = `0} {b = a `· `0}))
+      d2
+
+  p2 : ((suffix U (oL a)) ++ (`0 ∷ [])) ≡ U ++ (oL a ∷ `0 ∷ [])
+  p2 = ++-assoc U (oL a ∷ []) (`0 ∷ [])
+
+  d4 : Deriv _ ((suffix U (oL a)) ++ (`0 ∷ [])) (b `· `0)
+  d4 = transportCtx {L = Deriv _} (sym p2) d3
+
 oL-left-nucleus : LeftNucleus oL FL
 oL-left-nucleus = mkLeftNucleus RoL LoL-left
 
 proposition23 : RightNucleus oR FL × LeftNucleus oL FL
 proposition23 = oR-right-nucleus , oL-left-nucleus
+
+oR-expansive-R : Expansive oR FLRules
+oR-expansive-R = mkExpansive (RoR-R (λ r → r))
+
+oR-rightProgressiveR : RightProgressiveR oR FLRules
+oR-rightProgressiveR = mkRightProgressiveR LoR-right-R
+
+oL-expansive-R : Expansive oL FLRules
+oL-expansive-R = mkExpansive (RoL-R (λ r → r))
+
+oL-leftProgressiveR : LeftProgressiveR oL FLRules
+oL-leftProgressiveR = mkLeftProgressiveR LoL-left-R
+
+oR-t19 : ∀ {R} → FLRules ⊆R R → theorem19 oR (Deriv R)
+oR-t19 iFL _ l⊆m = theorem19-proof iFL oR-expansive-R (inr (inl oR-rightProgressiveR)) l⊆m
+
+oL-t19 : ∀ {R} → FLRules ⊆R R → theorem19 oL (Deriv R)
+oL-t19 iFL _ l⊆m = theorem19-proof iFL oL-expansive-R (inl oL-leftProgressiveR) l⊆m
 
 oR-bridge
   : ∀ {R Γ a}

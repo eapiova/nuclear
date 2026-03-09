@@ -10,7 +10,7 @@ open import Substructural.Core.Derivation Formula
 open import Substructural.Core.Nucleus Formula
 open import Substructural.Core.Extensions Formula
 open import Substructural.Core.Conservation Formula
-open import Cubical.Data.List.Properties using (++-unit-r)
+open import Cubical.Data.List.Properties using (++-assoc; ++-unit-r)
 
 private
   variable
@@ -277,6 +277,141 @@ lemma16-2 j R = Shift· j (L⟨ R ∪R CommRules ⟩)
 
 lemma16-3 : (Formula → Formula) → RuleSet → Type
 lemma16-3 j R = Shift∧ j (L⟨ R ∪R CommRules ∪R MonoRules ∪R ContrRules ⟩)
+
+-- On a singleton context, any progressive form gives the Lj replacement.
+private
+  lj-singleton
+    : ∀ {j R R'}
+    → R ⊆R R'
+    → LeftProgressiveR j R ⊎ (RightProgressiveR j R ⊎ BiProgressiveR j R)
+    → ∀ {c d} → Deriv R' (singleton c) (j d) → Deriv R' (singleton (j c)) (j d)
+  lj-singleton i (inl lp) = lift-LeftProgressiveR lp i {U = []}
+  lj-singleton i (inr (inl rp)) = lift-RightProgressiveR rp i {U = []}
+  lj-singleton i (inr (inr bp)) = lift-BiProgressiveR bp i {U = []} {V = []}
+
+lemma16-2-proof
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Expansive j R
+  → LeftProgressiveR j R ⊎ (RightProgressiveR j R ⊎ BiProgressiveR j R)
+  → Shift· j (L⟨ R ∪R CommRules ⟩)
+-- Case: LeftProgressiveR — use Ljleft + Comm twice
+lemma16-2-proof {j} {R} iFL e (inl lp) {a} {b} =
+  ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d5 ∷ᵃ []ᵃ)
+  where
+  iFL' : FLRules ⊆R (R ∪R CommRules)
+  iFL' rr = inl (iFL rr)
+  rj' : Rj j (Deriv (R ∪R CommRules))
+  rj' = lift-Expansive e inj₁
+  ljl : Ljleft j (Deriv (R ∪R CommRules))
+  ljl = lift-LeftProgressiveR lp inj₁
+  comm : Comm (Deriv (R ∪R CommRules))
+  comm = comm-from-rules inj₂
+  -- a, b ⊢ j(a·b) by R· + Rj
+  d0 : Deriv (R ∪R CommRules) (a ∷ b ∷ []) (j (a `· b))
+  d0 = rj' (ByRule (iFL' (R· {U = singleton a} {V = singleton b})) (Refl ∷ᵃ Refl ∷ᵃ []ᵃ))
+  -- a, jb ⊢ j(a·b) by Ljleft (replace last)
+  d1 : Deriv (R ∪R CommRules) (a ∷ j b ∷ []) (j (a `· b))
+  d1 = ljl {U = singleton a} {a = b} {b = a `· b} d0
+  -- jb, a ⊢ j(a·b) by Comm
+  d2 : Deriv (R ∪R CommRules) (j b ∷ a ∷ []) (j (a `· b))
+  d2 = comm {U₁ = []} {U₂ = []} {a₁ = a} {a₂ = j b} {b = j (a `· b)} d1
+  -- jb, ja ⊢ j(a·b) by Ljleft (replace last)
+  d3 : Deriv (R ∪R CommRules) (j b ∷ j a ∷ []) (j (a `· b))
+  d3 = ljl {U = singleton (j b)} {a = a} {b = a `· b} d2
+  -- ja, jb ⊢ j(a·b) by Comm
+  d5 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
+  d5 = comm {U₁ = []} {U₂ = []} {a₁ = j b} {a₂ = j a} {b = j (a `· b)} d3
+-- Case: RightProgressiveR — use Ljright + Comm twice
+lemma16-2-proof {j} {R} iFL e (inr (inl rp)) {a} {b} =
+  ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d5 ∷ᵃ []ᵃ)
+  where
+  iFL' : FLRules ⊆R (R ∪R CommRules)
+  iFL' rr = inl (iFL rr)
+  rj' : Rj j (Deriv (R ∪R CommRules))
+  rj' = lift-Expansive e inj₁
+  ljr : Ljright j (Deriv (R ∪R CommRules))
+  ljr = lift-RightProgressiveR rp inj₁
+  comm : Comm (Deriv (R ∪R CommRules))
+  comm = comm-from-rules inj₂
+  d0 : Deriv (R ∪R CommRules) (a ∷ b ∷ []) (j (a `· b))
+  d0 = rj' (ByRule (iFL' (R· {U = singleton a} {V = singleton b})) (Refl ∷ᵃ Refl ∷ᵃ []ᵃ))
+  -- ja, b ⊢ j(a·b) by Ljright (replace first)
+  d1 : Deriv (R ∪R CommRules) (j a ∷ b ∷ []) (j (a `· b))
+  d1 = ljr {U = singleton b} {a = a} {b = a `· b} d0
+  -- b, ja ⊢ j(a·b) by Comm
+  d2 : Deriv (R ∪R CommRules) (b ∷ j a ∷ []) (j (a `· b))
+  d2 = comm {U₁ = []} {U₂ = []} {a₁ = j a} {a₂ = b} {b = j (a `· b)} d1
+  -- jb, ja ⊢ j(a·b) by Ljright (replace first)
+  d3 : Deriv (R ∪R CommRules) (j b ∷ j a ∷ []) (j (a `· b))
+  d3 = ljr {U = singleton (j a)} {a = b} {b = a `· b} d2
+  -- ja, jb ⊢ j(a·b) by Comm
+  d5 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
+  d5 = comm {U₁ = []} {U₂ = []} {a₁ = j b} {a₂ = j a} {b = j (a `· b)} d3
+-- Case: BiProgressiveR — full Lj, no Comm needed
+lemma16-2-proof {j} {R} iFL e (inr (inr bp)) {a} {b} =
+  ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d3 ∷ᵃ []ᵃ)
+  where
+  iFL' : FLRules ⊆R (R ∪R CommRules)
+  iFL' rr = inl (iFL rr)
+  rj' : Rj j (Deriv (R ∪R CommRules))
+  rj' = lift-Expansive e inj₁
+  lj' : Lj j (Deriv (R ∪R CommRules))
+  lj' = lift-BiProgressiveR bp inj₁
+  d0 : Deriv (R ∪R CommRules) (a ∷ b ∷ []) (j (a `· b))
+  d0 = rj' (ByRule (iFL' (R· {U = singleton a} {V = singleton b})) (Refl ∷ᵃ Refl ∷ᵃ []ᵃ))
+  -- ja, b ⊢ j(a·b) by Lj at U=[], V=[b]
+  d1 : Deriv (R ∪R CommRules) (j a ∷ b ∷ []) (j (a `· b))
+  d1 = lj' {U = []} {V = singleton b} d0
+  -- ja, jb ⊢ j(a·b) by Lj at U=[ja], V=[]
+  d3 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
+  d3 = lj' {U = singleton (j a)} {V = []} d1
+
+lemma16-3-proof
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Expansive j R
+  → LeftProgressiveR j R ⊎ (RightProgressiveR j R ⊎ BiProgressiveR j R)
+  → Shift∧ j (L⟨ R ∪R CommRules ∪R MonoRules ∪R ContrRules ⟩)
+lemma16-3-proof {j} {R} iFL e pn {a} {b} =
+  transportCtx {L = Deriv R'} (++-unit-r (singleton (j a `∧ j b)))
+    (Trans {U = singleton (j a `∧ j b)} {V₁ = []} {V₂ = []} mid bridge)
+  where
+  R' : RuleSet
+  R' = R ∪R CommRules ∪R MonoRules ∪R ContrRules
+  iFL' : FLRules ⊆R R'
+  iFL' rr = inl (iFL rr)
+  iMono : MonoRules ⊆R R'
+  iMono rr = inr (inr (inl rr))
+  iContr : ContrRules ⊆R R'
+  iContr rr = inr (inr (inr rr))
+  iR : R ⊆R R'
+  iR rr = inl rr
+  -- Embed R ∪R CommRules into R'
+  embed : (R ∪R CommRules) ⊆R R'
+  embed (inl rr) = inl rr
+  embed (inr cr) = inr (inl cr)
+  rj' : Rj j (Deriv R')
+  rj' = lift-Expansive e iR
+  -- [ja ∧ jb] ⊢ ja · jb  via remark13
+  step∧→· : Deriv R' (singleton (j a `∧ j b)) (j a `· j b)
+  step∧→· = remark13-1-∧→· iFL' iMono iContr
+  -- [ja · jb] ⊢ j(a · b)  via lemma16-2 lifted to R'
+  step-shift· : Deriv R' (singleton (j a `· j b)) (j (a `· b))
+  step-shift· = lift-⊆R embed (lemma16-2-proof iFL e pn)
+  -- [ja ∧ jb] ⊢ j(a · b)  by Trans
+  mid : Deriv R' (singleton (j a `∧ j b)) (j (a `· b))
+  mid = transportCtx {L = Deriv R'} (++-unit-r (singleton (j a `∧ j b)))
+    (Trans {U = singleton (j a `∧ j b)} {V₁ = []} {V₂ = []} step∧→· step-shift·)
+  -- [a · b] ⊢ a ∧ b  via remark13
+  step·→∧ : Deriv R' (singleton (a `· b)) (a `∧ b)
+  step·→∧ = remark13-1-·→∧ iFL' iMono iContr
+  -- [a · b] ⊢ j(a ∧ b)  by Rj
+  stepRj : Deriv R' (singleton (a `· b)) (j (a `∧ b))
+  stepRj = rj' step·→∧
+  -- [j(a · b)] ⊢ j(a ∧ b)  by Lj on singleton
+  bridge : Deriv R' (singleton (j (a `· b))) (j (a `∧ b))
+  bridge = lj-singleton iR pn stepRj
 
 lemma16-4 : (Formula → Formula) → RuleSet → Type
 lemma16-4 j R = Nucleus j (L⟨ R ⟩) → Shift· j (L⟨ R ⟩) → BiNucleus j (L⟨ R ⟩)
@@ -570,3 +705,134 @@ theorem19 j L =
   → L ⊆ M⟨ j , FLRules ⟩
   → (Theorem19-Cond1 j L ↔ Theorem19-Cond2 j L)
     × (Theorem19-Cond2 j L ↔ Theorem19-Cond3 j L)
+
+-- ============================================================================
+-- Item (4) of lem-shifts-FL: LeftNucleus + Shift· → full Lj
+-- ============================================================================
+
+-- Left-associative fold of a formula with a context.
+-- foldCtx a [v₁,...,vₙ] = ((...(a·v₁)·v₂)·...)·vₙ
+foldCtx : Formula → Ctx → Formula
+foldCtx a [] = a
+foldCtx a (v ∷ V) = foldCtx (a `· v) V
+
+-- Iterated L·: fold antecedent from left.
+-- From U, a, V ⊢ c derive U, foldCtx(a,V) ⊢ c.
+foldL-·
+  : ∀ {R c}
+  → FLRules ⊆R R
+  → (U : Ctx) (a : Formula) (V : Ctx)
+  → Deriv R (plug₁ U a V) c
+  → Deriv R (suffix U (foldCtx a V)) c
+foldL-· iFL U a [] d = d
+foldL-· iFL U a (v ∷ V) d =
+  foldL-· iFL U (a `· v) V
+    (ByRule (iFL (L· {U = U} {V = V} {a = a} {b = v})) (d ∷ᵃ []ᵃ))
+
+-- Iterated R· + Rj + shift·: build j-version of fold.
+-- Derive j(a), V ⊢ j(foldCtx(a,V)).
+foldR-shift·
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Rj j (Deriv R)
+  → Shift· j (Deriv R)
+  → (a : Formula) (V : Ctx)
+  → Deriv R (j a ∷ V) (j (foldCtx a V))
+foldR-shift· iFL rj s· a [] = Refl
+foldR-shift· {j} iFL rj s· a (v ∷ V) =
+  Trans {U = j a ∷ v ∷ []} {V₁ = []} {V₂ = V}
+    step-ja·v
+    (foldR-shift· iFL rj s· (a `· v) V)
+  where
+  step-R· : Deriv _ (j a ∷ v ∷ []) (j a `· j v)
+  step-R· =
+    ByRule (iFL (R· {U = singleton (j a)} {V = singleton v} {a = j a} {b = j v}))
+      (Refl ∷ᵃ rj Refl ∷ᵃ []ᵃ)
+
+  step-ja·v : Deriv _ (j a ∷ v ∷ []) (j (a `· v))
+  step-ja·v =
+    transportCtx {L = Deriv _} {b = j (a `· v)} (++-unit-r (j a ∷ v ∷ []))
+      (Trans {U = j a ∷ v ∷ []} {V₁ = []} {V₂ = []}
+        step-R·
+        s·)
+
+-- Paper item (4): Ljleft + Shift· → full Lj.
+ljleft+shift·→lj
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Rj j (Deriv R)
+  → Ljleft j (Deriv R)
+  → Shift· j (Deriv R)
+  → Lj j (Deriv R)
+ljleft+shift·→lj iFL rj ljl s· {U} {[]} {a} {b} d = ljl d
+ljleft+shift·→lj {j} iFL rj ljl s· {U} {v ∷ V} {a} {b} d =
+  transportCtx {L = Deriv _} {b = j b} (cong (U ++_) (++-unit-r (j a ∷ v ∷ V)))
+    (Trans {U = j a ∷ v ∷ V} {V₁ = U} {V₂ = []}
+      (foldR-shift· iFL rj s· a (v ∷ V))
+      (ljl (foldL-· iFL U a (v ∷ V) d)))
+
+-- Iterated L· with suffix: fold from position a in context, carrying W after.
+-- From U, a, V, W ⊢ c derive U, foldCtx(a,V), W ⊢ c.
+foldL-·-prefix
+  : ∀ {R c}
+  → FLRules ⊆R R
+  → (U : Ctx) (a : Formula) (V : Ctx) (W : Ctx)
+  → Deriv R (U ++ a ∷ V ++ W) c
+  → Deriv R (U ++ foldCtx a V ∷ W) c
+foldL-·-prefix iFL U a [] W d = d
+foldL-·-prefix iFL U a (v ∷ V) W d =
+  foldL-·-prefix iFL U (a `· v) V W
+    (ByRule (iFL (L· {U = U} {V = V ++ W} {a = a} {b = v})) (d ∷ᵃ []ᵃ))
+
+-- Iterated R· + Rj + shift· with j at both ends:
+-- j(w), W, j(x) ⊢ j(foldCtx(w, W ++ [x])).
+foldR-shift·-prefix
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Rj j (Deriv R)
+  → Shift· j (Deriv R)
+  → (w : Formula) (W : Ctx) (x : Formula)
+  → Deriv R (j w ∷ W ++ singleton (j x)) (j (foldCtx w (W ++ singleton x)))
+foldR-shift·-prefix {j} iFL rj s· w [] x =
+  transportCtx {L = Deriv _} {b = j (w `· x)} (++-unit-r (j w ∷ singleton (j x)))
+    (Trans {U = j w ∷ singleton (j x)} {V₁ = []} {V₂ = []}
+      (ByRule (iFL (R· {U = singleton (j w)} {V = singleton (j x)}))
+        (Refl ∷ᵃ Refl ∷ᵃ []ᵃ))
+      s·)
+foldR-shift·-prefix {j} iFL rj s· w (v ∷ W) x =
+  Trans {U = j w ∷ v ∷ []} {V₁ = []} {V₂ = W ++ singleton (j x)}
+    step-jw·v
+    (foldR-shift·-prefix iFL rj s· (w `· v) W x)
+  where
+  step-R· : Deriv _ (j w ∷ v ∷ []) (j w `· j v)
+  step-R· =
+    ByRule (iFL (R· {U = singleton (j w)} {V = singleton v}))
+      (Refl ∷ᵃ rj Refl ∷ᵃ []ᵃ)
+  step-jw·v : Deriv _ (j w ∷ v ∷ []) (j (w `· v))
+  step-jw·v =
+    transportCtx {L = Deriv _} {b = j (w `· v)} (++-unit-r (j w ∷ v ∷ []))
+      (Trans {U = j w ∷ v ∷ []} {V₁ = []} {V₂ = []}
+        step-R·
+        s·)
+
+-- Symmetric: Ljright + Shift· → full Lj.
+ljright+shift·→lj
+  : ∀ {j R}
+  → FLRules ⊆R R
+  → Rj j (Deriv R)
+  → Ljright j (Deriv R)
+  → Shift· j (Deriv R)
+  → Lj j (Deriv R)
+ljright+shift·→lj iFL rj ljr s· {[]} {V} {a} {b} d = ljr d
+ljright+shift·→lj {j} iFL rj ljr s· {u ∷ U} {V} {a} {b} d =
+  transportCtx {L = Deriv _} {b = j b} (cong (u ∷_) (++-assoc U (singleton (j a)) V))
+    (Trans {U = u ∷ U ++ singleton (j a)} {V₁ = []} {V₂ = V}
+      unfold
+      (ljr (foldL-·-prefix iFL [] u (U ++ singleton a) V
+        (transportCtx {L = Deriv _} {b = j b} (cong (u ∷_) (sym (++-assoc U (singleton a) V))) d))))
+  where
+  unfold : Deriv _ (u ∷ U ++ singleton (j a)) (j (foldCtx u (U ++ singleton a)))
+  unfold =
+    Trans {U = singleton u} {V₁ = []} {V₂ = U ++ singleton (j a)}
+      (rj Refl)
+      (foldR-shift·-prefix iFL rj s· u U a)
