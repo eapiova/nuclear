@@ -111,8 +111,8 @@ data L0Rules : RuleSet where
     : ∀ {U V c}
     → L0Rules
         (mkRule
-          ((plug₁ U `0 V ▷ c) ∷ [])
-          (U ++ V ▷ c))
+          []
+          (plug₁ U `0 V ▷ c))
 
 IntRules : RuleSet
 IntRules = MinRules ∪R L0Rules
