@@ -1,8 +1,8 @@
-# Nuclei for substructural logics
+# Glivenko's theorem underneath structure — Agda formalisation
 
-Agda formalisation of nuclei and conservation theorems for substructural entailment relations, accompanying the paper:
+Agda formalisation accompanying the paper:
 
-> E. Apiova, D. Fellin, P. Schuster. *Nuclei for substructural logics*.
+> R. Borsetto, G. Fellin, T. Uustalu, C.-S. Wan. *Glivenko's theorem underneath structure*.
 
 ## Structure
 
