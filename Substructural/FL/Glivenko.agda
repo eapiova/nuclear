@@ -219,8 +219,8 @@ LgR-right-R iFL {U} {a} {b} d =
             {c = `0}))
         (d2 ∷ᵃ Refl ∷ᵃ []ᵃ)
 
-proposition20 : LeftNucleus gL FL × RightNucleus gR FL
-proposition20 =
+remark7 : LeftNucleus gL FL × RightNucleus gR FL
+remark7 =
   mkLeftNucleus RgL LgL-left
   ,
   mkRightNucleus RgR LgR-right
@@ -237,11 +237,11 @@ gR-expansive = mkExpansive (RgR-R (λ r → r))
 gR-rightProgressiveR : RightProgressiveR gR FLRules
 gR-rightProgressiveR = mkRightProgressiveR LgR-right-R
 
-gL-t19 : ∀ {R} → FLRules ⊆R R → theorem19 gL (Deriv R)
-gL-t19 iFL _ l⊆m = theorem19-proof iFL gL-expansive (inl gL-leftProgressiveR) l⊆m
+gL-t3 : ∀ {R} → FLRules ⊆R R → theorem3 gL (Deriv R)
+gL-t3 iFL _ l⊆m = theorem3-proof iFL gL-expansive (inl gL-leftProgressiveR) l⊆m
 
-gR-t19 : ∀ {R} → FLRules ⊆R R → theorem19 gR (Deriv R)
-gR-t19 iFL _ l⊆m = theorem19-proof iFL gR-expansive (inr (inl gR-rightProgressiveR)) l⊆m
+gR-t3 : ∀ {R} → FLRules ⊆R R → theorem3 gR (Deriv R)
+gR-t3 iFL _ l⊆m = theorem3-proof iFL gR-expansive (inr (inl gR-rightProgressiveR)) l⊆m
 
 GL-Cond1 : Entailment → Type
 GL-Cond1 L = ∀ {Γ a} → M⟨ gL , FLRules ⟩ Γ a ↔ L Γ (gL a)
@@ -250,7 +250,7 @@ GL-Cond2 : Entailment → Type
 GL-Cond2 L = G⟨ gL , FLRules ⟩ ⊆ L
 
 GL-Cond3 : Entailment → Type
-GL-Cond3 = Theorem19-Cond3 gL
+GL-Cond3 = Theorem3-Cond3 gL
 
 GR-Cond1 : Entailment → Type
 GR-Cond1 L = ∀ {Γ a} → M⟨ gR , FLRules ⟩ Γ a ↔ L Γ (gR a)
@@ -259,10 +259,10 @@ GR-Cond2 : Entailment → Type
 GR-Cond2 L = G⟨ gR , FLRules ⟩ ⊆ L
 
 GR-Cond3 : Entailment → Type
-GR-Cond3 = Theorem19-Cond3 gR
+GR-Cond3 = Theorem3-Cond3 gR
 
-theorem21 : (L : Entailment) → Type
-theorem21 L =
+corollary1 : (L : Entailment) → Type
+corollary1 L =
   (L ⊆ M⟨ gL , FLRules ⟩
   → (GL-Cond1 L ↔ GL-Cond2 L)
     × (GL-Cond2 L ↔ GL-Cond3 L))
@@ -271,21 +271,21 @@ theorem21 L =
   → (GR-Cond1 L ↔ GR-Cond2 L)
     × (GR-Cond2 L ↔ GR-Cond3 L))
 
-theorem21-from-theorem19
+corollary1-from-theorem3
   : (L : Entailment)
-  → theorem19 gL L
-  → theorem19 gR L
-  → theorem21 L
-theorem21-from-theorem19 L t19L t19R =
+  → theorem3 gL L
+  → theorem3 gR L
+  → corollary1 L
+corollary1-from-theorem3 L t19L t19R =
   leftPart
   ,
   rightPart
   where
   ln-gL : LeftNucleus gL FL
-  ln-gL = fst proposition20
+  ln-gL = fst remark7
 
   rn-gR : RightNucleus gR FL
-  rn-gR = snd proposition20
+  rn-gR = snd remark7
 
   leftPart
     : L ⊆ M⟨ gL , FLRules ⟩
@@ -322,14 +322,14 @@ Odintsov-Cond3 L = ∀ {a b} → L (singleton (a `⊸ (¬¬ b))) (¬¬ (a `⊸ b
 Glivenko-Cond : Type
 Glivenko-Cond = ∀ {Γ a} → Cla Γ a ↔ Int Γ (¬¬ a)
 
-theorem21-proof : ∀ {R} → FLRules ⊆R R → theorem21 (Deriv R)
-theorem21-proof {R} iFL =
-  theorem21-from-theorem19 (Deriv R)
-    (gL-t19 iFL)
-    (gR-t19 iFL)
+corollary1-proof : ∀ {R} → FLRules ⊆R R → corollary1 (Deriv R)
+corollary1-proof {R} iFL =
+  corollary1-from-theorem3 (Deriv R)
+    (gL-t3 iFL)
+    (gR-t3 iFL)
 
-corollary22 : Type₁
-corollary22 =
+corollary2 : Type₁
+corollary2 =
   (∀ {R} → FLeRules ⊆R R → Deriv R ⊆ InFLe
    → (Ono-Cond1 (Deriv R) ↔ Ono-Cond2 (Deriv R))
      × (Ono-Cond2 (Deriv R) ↔ Ono-Cond3 (Deriv R)))
@@ -426,14 +426,14 @@ shift›-from-shift⊸ {R} iFLe s⊸ {a} {b} =
   ljR = BiProgressiveR.biProgressiveR nn-biProgressiveR-FLe iFLe
   -- [nn b › a] ⊢ a ⊸ nn b
   d1 : Deriv R (singleton (nn b `› a)) (a `⊸ nn b)
-  d1 = remark13-2-›→⊸ iFL iComm
+  d1 = remark5-2-›→⊸ iFL iComm
   -- Trans with s⊸: [nn b › a] ⊢ nn(a ⊸ b)
   d2 : Deriv R (singleton (nn b `› a)) (nn (a `⊸ b))
   d2 = transportCtx {L = Deriv R} (++-unit-r (singleton (nn b `› a)))
     (Trans {U = singleton (nn b `› a)} {V₁ = []} {V₂ = []} d1 s⊸)
   -- [a ⊸ b] ⊢ b › a
   d3 : Deriv R (singleton (a `⊸ b)) (b `› a)
-  d3 = remark13-2-⊸→› iFL iComm
+  d3 = remark5-2-⊸→› iFL iComm
   -- Rj: [a ⊸ b] ⊢ nn(b › a)
   d4 : Deriv R (singleton (a `⊸ b)) (nn (b `› a))
   d4 = Rnn-R iFLe d3
@@ -453,13 +453,13 @@ ono-cond3→cond2 {R} iFLe (s∧ , s⊸) d = ext⊆l (g⊆ext d)
   embed (inr cr) = inr cr
 
   s· : Shift· nn (Deriv R)
-  s· = lift-⊆R (iFLe ∘ embed) (lemma16-2-proof inj₁ nn-expansive (inl nn-leftProgR))
+  s· = lift-⊆R (iFLe ∘ embed) (lemma1-2-proof inj₁ nn-expansive (inl nn-leftProgR))
 
   s› : Shift› nn (Deriv R)
   s› = shift›-from-shift⊸ iFLe s⊸
 
   g⊆ext : G⟨ nn , FLeRules ⟩ ⊆ L⟨ ShiftCoreExt nn FLeRules ⟩
-  g⊆ext = fst (lemma17-FLe nn-expansive nn-biProgressiveR-FLe)
+  g⊆ext = fst (lemma2-FLe nn-expansive nn-biProgressiveR-FLe)
 
   mutual
 
@@ -566,17 +566,17 @@ odintsov-cond3→cond2 {R} iMin s⊸ d = ext⊆l (g⊆ext d)
 
   s· : Shift· nn (Deriv R)
   s· = lift-⊆R (iMin ∘ embed-comm)
-    (lemma16-2-proof inj₁ nn-expansive (inl nn-leftProgR))
+    (lemma1-2-proof inj₁ nn-expansive (inl nn-leftProgR))
 
   s∧ : Shift∧ nn (Deriv R)
   s∧ = lift-⊆R (iMin ∘ embed-struct)
-    (lemma16-3-proof inj₁ nn-expansive (inl nn-leftProgR))
+    (lemma1-3-proof inj₁ nn-expansive (inl nn-leftProgR))
 
   s› : Shift› nn (Deriv R)
   s› = shift›-from-shift⊸ iFLe s⊸
 
   g⊆ext : Gli ⊆ L⟨ ShiftCoreExt nn MinRules ⟩
-  g⊆ext = fst (lemma17-Min nn-expansive-Min nn-biProgressiveR-Min)
+  g⊆ext = fst (lemma2-Min nn-expansive-Min nn-biProgressiveR-Min)
 
   mutual
 
@@ -731,8 +731,8 @@ gli⊆int = odintsov-cond3→cond2 MinRules⊆IntRules shift⊸-nn-Int
 glivenko-cond-proof : Glivenko-Cond
 glivenko-cond-proof = odintsov-cond2→cond1 int⊆cla gli⊆int
 
-corollary22-proof : corollary22
-corollary22-proof =
+corollary2-proof : corollary2
+corollary2-proof =
   (λ iFLe l⊆m →
     intro (ono-cond1→cond2 iFLe) (ono-cond2→cond1 l⊆m)
     ,

@@ -73,7 +73,7 @@ shift1∨-ext-FLe
   → BiProgressiveR j FLeRules
   → Shift1 j (L⟨ ShiftCoreExt j FLeRules ⟩)
     × Shift∨ j (L⟨ ShiftCoreExt j FLeRules ⟩)
-shift1∨-ext-FLe {j} e bn = lemma16-1 (inl ∘ inl) nExt
+shift1∨-ext-FLe {j} e bn = lemma1-1 (inl ∘ inl) nExt
   where
   nExt : Nucleus j (L⟨ ShiftCoreExt j FLeRules ⟩)
   nExt = mkNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl)
@@ -85,7 +85,7 @@ survive-L⊸›-ext-FLe
   → L⊸j-local j (L⟨ ShiftCoreExt j FLeRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j FLeRules ⟩)
 survive-L⊸›-ext-FLe {j} e bn =
-  lemma16-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
+  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
 
 surv-FLe
   : ∀ {j}
@@ -165,13 +165,13 @@ surv-FLe {j} e bn (inr (comm-instance {U₁} {U₂} {a₁} {a₂} {b})) (d ∷�
     (inl (inr (comm-instance {U₁ = U₁} {U₂ = U₂} {a₁ = a₁} {a₂ = a₂} {b = j b})))
     (d ∷ᵃ []ᵃ)
 
-lemma17-FLe
+lemma2-FLe
   : ∀ {j}
   → Expansive j FLeRules
   → BiProgressiveR j FLeRules
   → (G⟨ j , FLeRules ⟩ ⊆ L⟨ ShiftCoreExt j FLeRules ⟩)
     × (L⟨ ShiftCoreExt j FLeRules ⟩ ⊆ G⟨ j , FLeRules ⟩)
-lemma17-FLe e bn = lemma17-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
+lemma2-FLe e bn = lemma2-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
 
 shiftCoreInG-FL : ∀ {j} → ShiftCoreDerivableInG j FLRules
 shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
@@ -252,7 +252,7 @@ survive-L⊸›-ext-FL
   → L⊸j-local j (L⟨ ShiftCoreExt j FLRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j FLRules ⟩)
 survive-L⊸›-ext-FL {j} e lj =
-  lemma16-5-proof inl (mkBiNucleus (lift-Expansive e inl) lj)
+  lemma1-5-proof inl (mkBiNucleus (lift-Expansive e inl) lj)
 
 surv-FL
   : ∀ {j}
@@ -267,12 +267,12 @@ surv-FL {j} e lj (R∨₁ {U} {a} {b}) (d ∷ᵃ []ᵃ) =
   transportCtx {L = Deriv _} (++-unit-r U)
     (Trans {U = U} {V₁ = []} {V₂ = []}
       (ByRule (inl (R∨₁ {U = U} {a = j a} {b = j b})) (d ∷ᵃ []ᵃ))
-      (snd (lemma16-1 inl (mkNucleus (lift-Expansive e inl) lj)) {a = a} {b = b}))
+      (snd (lemma1-1 inl (mkNucleus (lift-Expansive e inl) lj)) {a = a} {b = b}))
 surv-FL {j} e lj (R∨₂ {U} {a} {b}) (d ∷ᵃ []ᵃ) =
   transportCtx {L = Deriv _} (++-unit-r U)
     (Trans {U = U} {V₁ = []} {V₂ = []}
       (ByRule (inl (R∨₂ {U = U} {a = j a} {b = j b})) (d ∷ᵃ []ᵃ))
-      (snd (lemma16-1 inl (mkNucleus (lift-Expansive e inl) lj)) {a = a} {b = b}))
+      (snd (lemma1-1 inl (mkNucleus (lift-Expansive e inl) lj)) {a = a} {b = b}))
 surv-FL {j} e lj (L∧₁ {U} {V} {a} {b} {c}) (d ∷ᵃ []ᵃ) =
   ByRule
     (inl (L∧₁ {U = U} {V = V} {a = a} {b = b} {c = j c}))
@@ -295,7 +295,7 @@ surv-FL {j} e lj (L1 {U} {V} {c}) (d ∷ᵃ []ᵃ) =
 surv-FL {j} e lj R1 []ᵃ =
   Trans {U = []} {V₁ = []} {V₂ = []}
     (ByRule (inl R1) []ᵃ)
-    (fst (lemma16-1 inl (mkNucleus (lift-Expansive e inl) lj)))
+    (fst (lemma1-1 inl (mkNucleus (lift-Expansive e inl) lj)))
 surv-FL {j} e lj (L· {U} {V} {a} {b} {c}) (d ∷ᵃ []ᵃ) =
   ByRule
     (inl (L· {U = U} {V = V} {a = a} {b = b} {c = j c}))
@@ -328,14 +328,14 @@ surv-FL {j} e lj (R› {U} {a} {b}) (d ∷ᵃ []ᵃ) =
         (d ∷ᵃ []ᵃ))
       (ByRule (inr (shift›-instance {a = a} {b = b})) []ᵃ))
 
-lemma17-FL
+lemma2-FL
   : ∀ {j}
   → Expansive j FLRules
   → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
   → (G⟨ j , FLRules ⟩ ⊆ L⟨ ShiftCoreExt j FLRules ⟩)
     × (L⟨ ShiftCoreExt j FLRules ⟩ ⊆ G⟨ j , FLRules ⟩)
-lemma17-FL e pn =
-  lemma17-proof (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
+lemma2-FL e pn =
+  lemma2-proof (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
 
 shiftCoreInG-Min : ∀ {j} → ShiftCoreDerivableInG j MinRules
 shiftCoreInG-Min {j} (shift·-instance {a} {b}) []ᵃ =
@@ -387,7 +387,7 @@ shift1∨-ext-Min
   → BiProgressiveR j MinRules
   → Shift1 j (L⟨ ShiftCoreExt j MinRules ⟩)
     × Shift∨ j (L⟨ ShiftCoreExt j MinRules ⟩)
-shift1∨-ext-Min {j} e bn = lemma16-1 (inl ∘ inl) nExt
+shift1∨-ext-Min {j} e bn = lemma1-1 (inl ∘ inl) nExt
   where
   nExt : Nucleus j (L⟨ ShiftCoreExt j MinRules ⟩)
   nExt = mkNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl)
@@ -399,7 +399,7 @@ survive-L⊸›-ext-Min
   → L⊸j-local j (L⟨ ShiftCoreExt j MinRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j MinRules ⟩)
 survive-L⊸›-ext-Min {j} e bn =
-  lemma16-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
+  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
 
 surv-Min
   : ∀ {j}
@@ -489,10 +489,10 @@ surv-Min {j} e bn (inr (inr (inr (contr-instance {U₁} {U₂} {a} {b})))) (d �
     (inl (inr (inr (inr (contr-instance {U₁ = U₁} {U₂ = U₂} {a = a} {b = j b})))))
     (d ∷ᵃ []ᵃ)
 
-lemma17-Min
+lemma2-Min
   : ∀ {j}
   → Expansive j MinRules
   → BiProgressiveR j MinRules
   → (G⟨ j , MinRules ⟩ ⊆ L⟨ ShiftCoreExt j MinRules ⟩)
     × (L⟨ ShiftCoreExt j MinRules ⟩ ⊆ G⟨ j , MinRules ⟩)
-lemma17-Min e bn = lemma17-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
+lemma2-Min e bn = lemma2-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min

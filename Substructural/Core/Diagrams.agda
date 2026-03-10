@@ -2,6 +2,9 @@ open import Cubical.Core.Primitives
 
 module Substructural.Core.Diagrams {ℓ} (S : Type ℓ) where
 
+-- CSL-only diagram API. This module is kept for the 2026 layer and is not part
+-- of the paper-facing public surface re-exported by Everything.agda.
+
 open import Substructural.Prelude
 open import Substructural.Core.Judgement S
 open import Substructural.Core.Rules S
@@ -79,29 +82,34 @@ kjM⊆kjG
   → Kj j (M⟨ j , R ⟩) ⊆ Kj j (G⟨ j , R ⟩)
 kjM⊆kjG e d = m→gj e (destab-M d)
 
-th11-1
+base⊆extension
+  : ∀ {R R'}
+  → L⟨ R ⟩ ⊆ L⟨ R ∪R R' ⟩
+base⊆extension = lift-⊆R inj₁
+
+theorem1-1
   : ∀ {j R R'}
   → Expansive j R
   → L⟨ R ∪R R' ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩)
-th11-1 e = fst (theorem11 e)
+theorem1-1 e = fst (theorem1 e)
 
-th11-2
+theorem1-2
   : ∀ {j R R'}
   → Expansive j R
   → (Kj j (L⟨ R ∪R R' ⟩) ⊆ L⟨ R ∪R R' ⟩) ↔ (M⟨ j , R ⟩ ⊆ L⟨ R ∪R R' ⟩)
-th11-2 e = fst (snd (theorem11 e))
+theorem1-2 e = fst (snd (theorem1 e))
 
-th11-3
+theorem1-3
   : ∀ {j R R'}
   → Expansive j R
   → (Kj j (L⟨ R ∪R R' ⟩) ⊆ M⟨ j , R ⟩) ↔ (L⟨ R ∪R R' ⟩ ⊆ M⟨ j , R ⟩)
-th11-3 e = fst (snd (snd (theorem11 e)))
+theorem1-3 e = fst (snd (snd (theorem1 e)))
 
-th11-4
+theorem1-4
   : ∀ {j R R'}
   → Expansive j R
   → (M⟨ j , R ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩)) ↔ (G⟨ j , R ⟩ ⊆ L⟨ R ∪R R' ⟩)
-th11-4 e = snd (snd (snd (theorem11 e)))
+theorem1-4 e = snd (snd (snd (theorem1 e)))
 
 record BaseDiagram (j : S → S) (R : RuleSet) : Type ℓ where
   field
@@ -122,7 +130,7 @@ baseDiagram
   : ∀ {j R}
   → Expansive j R
   → BaseDiagram j R
-baseDiagram {j} {R} e with proposition10 {j} {R} e
+baseDiagram {j} {R} e with proposition1 {j} {R} e
 ... | l⊆k , l⊆g , g⊆m' , kl⊆m' =
   record
     { L⊆G = l⊆g
@@ -179,20 +187,20 @@ page8Diagram
   → Page8Diagram j R R₁ R₂ R₃
 page8Diagram {j} {R} {R₁} {R₂} {R₃} e l₁⊆g g⊆l₂ l₂⊆m m⊆l₃ =
   record
-    { L⊆L₁ = proposition4 {R = R} {R' = R₁}
+    { L⊆L₁ = base⊆extension {R = R} {R' = R₁}
     ; L₁⊆G = l₁⊆g
     ; G⊆L₂ = g⊆l₂
     ; L₂⊆M = l₂⊆m
     ; M⊆L₃ = m⊆l₃
 
     ; L⊆KL = onBase-Expansive e
-    ; L₁⊆KL₁ = th11-1 {R' = R₁} e
+    ; L₁⊆KL₁ = theorem1-1 {R' = R₁} e
     ; G⊆KG = lift-Expansive e (λ rr → inl rr)
-    ; L₂⊆KL₂ = th11-1 {R' = R₂} e
+    ; L₂⊆KL₂ = theorem1-1 {R' = R₂} e
     ; M⊆KM = m⊆km e
-    ; L₃⊆KL₃ = th11-1 {R' = R₃} e
+    ; L₃⊆KL₃ = theorem1-1 {R' = R₃} e
 
-    ; KL⊆KL₁ = λ d → proposition4 {R = R} {R' = R₁} d
+    ; KL⊆KL₁ = λ d → base⊆extension {R = R} {R' = R₁} d
     ; KL₁⊆KG = kl₁⊆kg
     ; KG⊆KL₂ = λ d → g⊆l₂ d
     ; KL₂⊆KM = λ d → l₂⊆m d
@@ -205,14 +213,14 @@ page8Diagram {j} {R} {R₁} {R₂} {R₃} e l₁⊆g g⊆l₂ l₂⊆m m⊆l₃ 
     ; KM⊆KL₂ = λ d → g⊆l₂ (kjM⊆kjG e d)
 
     ; KM⊆M = km⊆m
-    ; KL₃⊆L₃ = from (th11-2 {R' = R₃} e) m⊆l₃
+    ; KL₃⊆L₃ = from (theorem1-2 {R' = R₃} e) m⊆l₃
     }
   where
   l₁⊆m : L⟨ R ∪R R₁ ⟩ ⊆ M⟨ j , R ⟩
   l₁⊆m d = g⊆m e (l₁⊆g d)
 
   kl₁⊆m : Kj j (L⟨ R ∪R R₁ ⟩) ⊆ M⟨ j , R ⟩
-  kl₁⊆m d = from (th11-3 {R' = R₁} e) l₁⊆m d
+  kl₁⊆m d = from (theorem1-3 {R' = R₁} e) l₁⊆m d
 
   kl₁⊆kg : Kj j (L⟨ R ∪R R₁ ⟩) ⊆ Kj j (G⟨ j , R ⟩)
   kl₁⊆kg d = kjM⊆kjG e (m⊆km e (kl₁⊆m d))
@@ -241,11 +249,11 @@ case1
   → Case1 j R R'
 case1 {j} {R} {R'} e =
   record
-    { l⊆l' = proposition4 {R = R} {R' = R'}
+    { l⊆l' = base⊆extension {R = R} {R' = R'}
     ; g⊆g' = lift-G (λ rr → inl rr)
     ; m⊆m' = lift-M (λ rr → inl rr)
 
-    ; kl⊆kl' = λ d → proposition4 {R = R} {R' = R'} d
+    ; kl⊆kl' = λ d → base⊆extension {R = R} {R' = R'} d
     ; kg⊆kg' = λ d → lift-G (λ rr → inl rr) d
     ; km⊆km' = λ d → lift-M (λ rr → inl rr) d
 
@@ -274,7 +282,7 @@ case2 {j} {R} {R'} e l'⊆m adm =
   record
     { common = case1 e
     ; l'⊆m = l'⊆m
-    ; kl'⊆m = from (th11-3 {R' = R'} e) l'⊆m
+    ; kl'⊆m = from (theorem1-3 {R' = R'} e) l'⊆m
     ; m'⊆m-arrow = m'⊆m adm
     ; km'⊆km = λ d → m'⊆m adm d
     }
@@ -357,10 +365,10 @@ case4 {j} {R} {R'} e g⊆l' l'⊆m g'⊆l' adm =
   l'⊆g' = lift-base-into-G
 
   kl'⊆m : Kj j (L⟨ R ∪R R' ⟩) ⊆ M⟨ j , R ⟩
-  kl'⊆m = from (th11-3 {R' = R'} e) l'⊆m
+  kl'⊆m = from (theorem1-3 {R' = R'} e) l'⊆m
 
   m⊆kl' : M⟨ j , R ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩)
-  m⊆kl' = from (th11-4 {R' = R'} e) g⊆l'
+  m⊆kl' = from (theorem1-4 {R' = R'} e) g⊆l'
 
   kg⊆kl' : Kj j (G⟨ j , R ⟩) ⊆ Kj j (L⟨ R ∪R R' ⟩)
   kg⊆kl' d = g⊆l' d
@@ -408,10 +416,10 @@ case5 {j} {R} {R'} e m⊆l' g'⊆l' m'⊆l' =
   e' = mkExpansive (lift-Expansive e inj₁)
 
   l'⊆kl' : L⟨ R ∪R R' ⟩ ⊆ Kj j (L⟨ R ∪R R' ⟩)
-  l'⊆kl' = th11-1 {R' = R'} e
+  l'⊆kl' = theorem1-1 {R' = R'} e
 
   kl'⊆l' : Kj j (L⟨ R ∪R R' ⟩) ⊆ L⟨ R ∪R R' ⟩
-  kl'⊆l' = from (th11-2 {R' = R'} e) m⊆l'
+  kl'⊆l' = from (theorem1-2 {R' = R'} e) m⊆l'
 
   l'⊆g' : L⟨ R ∪R R' ⟩ ⊆ G⟨ j , R ∪R R' ⟩
   l'⊆g' = lift-base-into-G

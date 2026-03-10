@@ -219,7 +219,7 @@ R›-Kj→shift› {j} {R} iFL r› {a} {b} =
       (iFL (L› {U = singleton a} {V = []} {W = []} {a = a} {b = j b} {c = j b}))
       (Refl ∷ᵃ Refl ∷ᵃ []ᵃ))
 
-theorem15
+theorem2
   : ∀ {j R}
   → FLRules ⊆R R
   → (R1-Kj j R ↔ Shift1 j (L⟨ R ⟩))
@@ -228,7 +228,7 @@ theorem15
     × (R·-Kj j R ↔ Shift· j (L⟨ R ⟩))
     × (R⊸-Kj j R ↔ Shift⊸ j (L⟨ R ⟩))
     × (R›-Kj j R ↔ Shift› j (L⟨ R ⟩))
-theorem15 {j} {R} iFL =
+theorem2 {j} {R} iFL =
   intro (R1-Kj→shift1 {j} {R} iFL) (shift1→R1-Kj {j} {R} iFL)
   , intro (R∨-Kj→shift∨ {j} {R} iFL) (shift∨→R∨-Kj {j} {R} iFL)
   , intro (R∧-Kj→shift∧ {j} {R} iFL) (shift∧→R∧-Kj {j} {R} iFL)
@@ -236,12 +236,12 @@ theorem15 {j} {R} iFL =
   , intro (R⊸-Kj→shift⊸ {j} {R} iFL) (shift⊸→R⊸-Kj {j} {R} iFL)
   , intro (R›-Kj→shift› {j} {R} iFL) (shift›→R›-Kj {j} {R} iFL)
 
-lemma16-1
+lemma1-1
   : ∀ {j R}
   → FLRules ⊆R R
   → Nucleus j (L⟨ R ⟩)
   → Shift1 j (L⟨ R ⟩) × Shift∨ j (L⟨ R ⟩)
-lemma16-1 {j} {R} iFL n = shift1 , shift∨
+lemma1-1 {j} {R} iFL n = shift1 , shift∨
   where
   rjL : Rj j (L⟨ R ⟩)
   rjL = nucleus-rj n
@@ -272,11 +272,11 @@ lemma16-1 {j} {R} iFL n = shift1 , shift∨
     right : Deriv R (singleton (j b)) (j (a `∨ b))
     right = ljL {U = []} {V = []} {a = b} {b = a `∨ b} right0
 
-lemma16-2 : (Formula → Formula) → RuleSet → Type
-lemma16-2 j R = Shift· j (L⟨ R ∪R CommRules ⟩)
+lemma1-2 : (Formula → Formula) → RuleSet → Type
+lemma1-2 j R = Shift· j (L⟨ R ∪R CommRules ⟩)
 
-lemma16-3 : (Formula → Formula) → RuleSet → Type
-lemma16-3 j R = Shift∧ j (L⟨ R ∪R CommRules ∪R MonoRules ∪R ContrRules ⟩)
+lemma1-3 : (Formula → Formula) → RuleSet → Type
+lemma1-3 j R = Shift∧ j (L⟨ R ∪R CommRules ∪R MonoRules ∪R ContrRules ⟩)
 
 -- On a singleton context, any progressive form gives the Lj replacement.
 private
@@ -289,14 +289,14 @@ private
   lj-singleton i (inr (inl rp)) = lift-RightProgressiveR rp i {U = []}
   lj-singleton i (inr (inr bp)) = lift-BiProgressiveR bp i {U = []} {V = []}
 
-lemma16-2-proof
+lemma1-2-proof
   : ∀ {j R}
   → FLRules ⊆R R
   → Expansive j R
   → LeftProgressiveR j R ⊎ (RightProgressiveR j R ⊎ BiProgressiveR j R)
   → Shift· j (L⟨ R ∪R CommRules ⟩)
 -- Case: LeftProgressiveR — use Ljleft + Comm twice
-lemma16-2-proof {j} {R} iFL e (inl lp) {a} {b} =
+lemma1-2-proof {j} {R} iFL e (inl lp) {a} {b} =
   ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d5 ∷ᵃ []ᵃ)
   where
   iFL' : FLRules ⊆R (R ∪R CommRules)
@@ -323,7 +323,7 @@ lemma16-2-proof {j} {R} iFL e (inl lp) {a} {b} =
   d5 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
   d5 = comm {U₁ = []} {U₂ = []} {a₁ = j b} {a₂ = j a} {b = j (a `· b)} d3
 -- Case: RightProgressiveR — use Ljright + Comm twice
-lemma16-2-proof {j} {R} iFL e (inr (inl rp)) {a} {b} =
+lemma1-2-proof {j} {R} iFL e (inr (inl rp)) {a} {b} =
   ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d5 ∷ᵃ []ᵃ)
   where
   iFL' : FLRules ⊆R (R ∪R CommRules)
@@ -349,7 +349,7 @@ lemma16-2-proof {j} {R} iFL e (inr (inl rp)) {a} {b} =
   d5 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
   d5 = comm {U₁ = []} {U₂ = []} {a₁ = j b} {a₂ = j a} {b = j (a `· b)} d3
 -- Case: BiProgressiveR — full Lj, no Comm needed
-lemma16-2-proof {j} {R} iFL e (inr (inr bp)) {a} {b} =
+lemma1-2-proof {j} {R} iFL e (inr (inr bp)) {a} {b} =
   ByRule (iFL' (L· {U = []} {V = []} {a = j a} {b = j b})) (d3 ∷ᵃ []ᵃ)
   where
   iFL' : FLRules ⊆R (R ∪R CommRules)
@@ -367,13 +367,13 @@ lemma16-2-proof {j} {R} iFL e (inr (inr bp)) {a} {b} =
   d3 : Deriv (R ∪R CommRules) (j a ∷ j b ∷ []) (j (a `· b))
   d3 = lj' {U = singleton (j a)} {V = []} d1
 
-lemma16-3-proof
+lemma1-3-proof
   : ∀ {j R}
   → FLRules ⊆R R
   → Expansive j R
   → LeftProgressiveR j R ⊎ (RightProgressiveR j R ⊎ BiProgressiveR j R)
   → Shift∧ j (L⟨ R ∪R CommRules ∪R MonoRules ∪R ContrRules ⟩)
-lemma16-3-proof {j} {R} iFL e pn {a} {b} =
+lemma1-3-proof {j} {R} iFL e pn {a} {b} =
   transportCtx {L = Deriv R'} (++-unit-r (singleton (j a `∧ j b)))
     (Trans {U = singleton (j a `∧ j b)} {V₁ = []} {V₂ = []} mid bridge)
   where
@@ -395,17 +395,17 @@ lemma16-3-proof {j} {R} iFL e pn {a} {b} =
   rj' = lift-Expansive e iR
   -- [ja ∧ jb] ⊢ ja · jb  via remark13
   step∧→· : Deriv R' (singleton (j a `∧ j b)) (j a `· j b)
-  step∧→· = remark13-1-∧→· iFL' iMono iContr
-  -- [ja · jb] ⊢ j(a · b)  via lemma16-2 lifted to R'
+  step∧→· = remark5-1-∧→· iFL' iMono iContr
+  -- [ja · jb] ⊢ j(a · b)  via lemma1-2 lifted to R'
   step-shift· : Deriv R' (singleton (j a `· j b)) (j (a `· b))
-  step-shift· = lift-⊆R embed (lemma16-2-proof iFL e pn)
+  step-shift· = lift-⊆R embed (lemma1-2-proof iFL e pn)
   -- [ja ∧ jb] ⊢ j(a · b)  by Trans
   mid : Deriv R' (singleton (j a `∧ j b)) (j (a `· b))
   mid = transportCtx {L = Deriv R'} (++-unit-r (singleton (j a `∧ j b)))
     (Trans {U = singleton (j a `∧ j b)} {V₁ = []} {V₂ = []} step∧→· step-shift·)
   -- [a · b] ⊢ a ∧ b  via remark13
   step·→∧ : Deriv R' (singleton (a `· b)) (a `∧ b)
-  step·→∧ = remark13-1-·→∧ iFL' iMono iContr
+  step·→∧ = remark5-1-·→∧ iFL' iMono iContr
   -- [a · b] ⊢ j(a ∧ b)  by Rj
   stepRj : Deriv R' (singleton (a `· b)) (j (a `∧ b))
   stepRj = rj' step·→∧
@@ -413,15 +413,15 @@ lemma16-3-proof {j} {R} iFL e pn {a} {b} =
   bridge : Deriv R' (singleton (j (a `· b))) (j (a `∧ b))
   bridge = lj-singleton iR pn stepRj
 
-lemma16-4 : (Formula → Formula) → RuleSet → Type
-lemma16-4 j R = Nucleus j (L⟨ R ⟩) → Shift· j (L⟨ R ⟩) → BiNucleus j (L⟨ R ⟩)
+lemma1-4 : (Formula → Formula) → RuleSet → Type
+lemma1-4 j R = Nucleus j (L⟨ R ⟩) → Shift· j (L⟨ R ⟩) → BiNucleus j (L⟨ R ⟩)
 
-lemma16-4-proof
+lemma1-4-proof
   : ∀ {j R}
   → Nucleus j (L⟨ R ⟩)
   → Shift· j (L⟨ R ⟩)
   → BiNucleus j (L⟨ R ⟩)
-lemma16-4-proof n s = nucleus→biNucleus n
+lemma1-4-proof n s = nucleus→biNucleus n
 
 plug-singleton
   : ∀ (U V : Ctx) (a : Formula)
@@ -442,18 +442,18 @@ L›j-local j L =
   → L (plug₁ W b V) (j c)
   → L (plug₁ W (b `› a) (U ++ V)) (j c)
 
-lemma16-5 : (Formula → Formula) → RuleSet → Type
-lemma16-5 j R =
+lemma1-5 : (Formula → Formula) → RuleSet → Type
+lemma1-5 j R =
   FLRules ⊆R R
   → BiNucleus j (L⟨ R ⟩)
   → L⊸j-local j (L⟨ R ⟩) × L›j-local j (L⟨ R ⟩)
 
-lemma16-5-proof
+lemma1-5-proof
   : ∀ {j R}
   → FLRules ⊆R R
   → BiNucleus j (L⟨ R ⟩)
   → L⊸j-local j (L⟨ R ⟩) × L›j-local j (L⟨ R ⟩)
-lemma16-5-proof {j} {R} iFL bn =
+lemma1-5-proof {j} {R} iFL bn =
   l⊸j
   ,
   l›j
@@ -526,8 +526,8 @@ lemma16-5-proof {j} {R} iFL bn =
         (iFL (L› {U = U} {V = V} {W = W} {a = j a} {b = j b} {c = j c}))
         (dU ∷ᵃ dWV' ∷ᵃ []ᵃ)
 
-lemma16-6 : (Formula → Formula) → RuleSet → Type
-lemma16-6 j R =
+lemma1-6 : (Formula → Formula) → RuleSet → Type
+lemma1-6 j R =
   FLRules ⊆R R
   → Nucleus j (L⟨ R ⟩)
   → Shift· j (L⟨ R ⟩)
@@ -535,7 +535,7 @@ lemma16-6 j R =
     × L›j-local j (L⟨ R ⟩)
     × Transj j (L⟨ R ⟩)
 
-lemma16-6-proof
+lemma1-6-proof
   : ∀ {j R}
   → FLRules ⊆R R
   → Nucleus j (L⟨ R ⟩)
@@ -543,28 +543,28 @@ lemma16-6-proof
   → L⊸j-local j (L⟨ R ⟩)
     × L›j-local j (L⟨ R ⟩)
     × Transj j (L⟨ R ⟩)
-lemma16-6-proof {j} {R} iFL n s =
+lemma1-6-proof {j} {R} iFL n s =
   fst survive
   ,
   snd survive
   ,
-  to (fst (snd (lemma6 {j = j} {R = R}))) (biNucleus-lj bn)
+  to (fst (snd (remark1 {j = j} {R = R}))) (biNucleus-lj bn)
   where
   bn : BiNucleus j (L⟨ R ⟩)
-  bn = lemma16-4-proof n s
+  bn = lemma1-4-proof n s
 
   survive : L⊸j-local j (L⟨ R ⟩) × L›j-local j (L⟨ R ⟩)
-  survive = lemma16-5-proof iFL bn
+  survive = lemma1-5-proof iFL bn
 
 -- Full Lemma 16 package signature for downstream modules.
-lemma16 : (Formula → Formula) → RuleSet → Type
-lemma16 j R =
+lemma1 : (Formula → Formula) → RuleSet → Type
+lemma1 j R =
   (Nucleus j (L⟨ R ⟩) → Shift1 j (L⟨ R ⟩) × Shift∨ j (L⟨ R ⟩))
-  × lemma16-2 j R
-  × lemma16-3 j R
-  × lemma16-4 j R
-  × lemma16-5 j R
-  × lemma16-6 j R
+  × lemma1-2 j R
+  × lemma1-3 j R
+  × lemma1-4 j R
+  × lemma1-5 j R
+  × lemma1-6 j R
 
 data ShiftCoreRules (j : Formula → Formula) : RuleSet where
   shift·-instance
@@ -659,52 +659,52 @@ mutual
   g→ext lj surv (ByRule (inr (inr (rj-instance rr))) ds) =
     surv rr (g→ext-all lj surv ds)
 
-lemma17 : (Formula → Formula) → RuleSet → Type
-lemma17 j R =
+lemma2 : (Formula → Formula) → RuleSet → Type
+lemma2 j R =
   Lj j (L⟨ ShiftCoreExt j R ⟩)
   → (∀ {r} → R r → SurvivesAfter j r (ShiftCoreExt j R))
   → ShiftCoreDerivableInG j R
   → (G⟨ j , R ⟩ ⊆ L⟨ ShiftCoreExt j R ⟩)
     × (L⟨ ShiftCoreExt j R ⟩ ⊆ G⟨ j , R ⟩)
 
-lemma17-proof
+lemma2-proof
   : ∀ {j R}
   → Lj j (L⟨ ShiftCoreExt j R ⟩)
   → (∀ {r} → R r → SurvivesAfter j r (ShiftCoreExt j R))
   → ShiftCoreDerivableInG j R
   → (G⟨ j , R ⟩ ⊆ L⟨ ShiftCoreExt j R ⟩)
     × (L⟨ ShiftCoreExt j R ⟩ ⊆ G⟨ j , R ⟩)
-lemma17-proof lj surv s = g→ext lj surv , ext→g s
+lemma2-proof lj surv s = g→ext lj surv , ext→g s
 
-lemma17-from-base-shifts
+lemma2-from-base-shifts
   : ∀ {j R}
   → Lj j (L⟨ ShiftCoreExt j R ⟩)
   → (∀ {r} → R r → SurvivesAfter j r (ShiftCoreExt j R))
   → ShiftCoreDerivableInBase j R
   → (G⟨ j , R ⟩ ⊆ L⟨ ShiftCoreExt j R ⟩)
     × (L⟨ ShiftCoreExt j R ⟩ ⊆ G⟨ j , R ⟩)
-lemma17-from-base-shifts lj surv s =
-  lemma17-proof lj surv (shiftCore-base→G s)
+lemma2-from-base-shifts lj surv s =
+  lemma2-proof lj surv (shiftCore-base→G s)
 
-Theorem19-Cond1 : (Formula → Formula) → Entailment → Type
-Theorem19-Cond1 j L = ∀ {Γ a} → M⟨ j , FLRules ⟩ Γ a ↔ L Γ (j a)
+Theorem3-Cond1 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond1 j L = ∀ {Γ a} → M⟨ j , FLRules ⟩ Γ a ↔ L Γ (j a)
 
-Theorem19-Cond2 : (Formula → Formula) → Entailment → Type
-Theorem19-Cond2 j L = G⟨ j , FLRules ⟩ ⊆ L
+Theorem3-Cond2 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond2 j L = G⟨ j , FLRules ⟩ ⊆ L
 
-Theorem19-Cond3 : (Formula → Formula) → Entailment → Type
-Theorem19-Cond3 j L =
+Theorem3-Cond3 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond3 j L =
   (∀ {a b} → L (singleton (j a `· j b)) (j (a `· b)))
   × (∀ {a b} → L (singleton (j a `∧ j b)) (j (a `∧ b)))
   × (∀ {a b} → L (singleton (a `⊸ j b)) (j (a `⊸ b)))
   × (∀ {a b} → L (singleton (j b `› a)) (j (b `› a)))
 
-theorem19 : (j : Formula → Formula) (L : Entailment) → Type
-theorem19 j L =
+theorem3 : (j : Formula → Formula) (L : Entailment) → Type
+theorem3 j L =
   (RightNucleus j FL ⊎ (LeftNucleus j FL ⊎ BiNucleus j FL))
   → L ⊆ M⟨ j , FLRules ⟩
-  → (Theorem19-Cond1 j L ↔ Theorem19-Cond2 j L)
-    × (Theorem19-Cond2 j L ↔ Theorem19-Cond3 j L)
+  → (Theorem3-Cond1 j L ↔ Theorem3-Cond2 j L)
+    × (Theorem3-Cond2 j L ↔ Theorem3-Cond3 j L)
 
 -- ============================================================================
 -- Item (4) of lem-shifts-FL: LeftNucleus + Shift· → full Lj
