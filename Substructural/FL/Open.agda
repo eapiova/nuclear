@@ -249,8 +249,8 @@ LoL-left-R iFL {U} {a} {b} d =
 oL-left-nucleus : LeftNucleus oL FL
 oL-left-nucleus = mkLeftNucleus RoL LoL-left
 
-remark8 : RightNucleus oR FL × LeftNucleus oL FL
-remark8 = oR-right-nucleus , oL-left-nucleus
+remark7 : RightNucleus oR FL × LeftNucleus oL FL
+remark7 = oR-right-nucleus , oL-left-nucleus
 
 oR-expansive-R : Expansive oR FLRules
 oR-expansive-R = mkExpansive (RoR-R (λ r → r))
@@ -504,10 +504,10 @@ corollary3-from-theorem3 {R} iFL t19R t19L =
   rightPart
   where
   rn-oR : RightNucleus oR FL
-  rn-oR = fst remark8
+  rn-oR = fst remark7
 
   ln-oL : LeftNucleus oL FL
-  ln-oL = snd remark8
+  ln-oL = snd remark7
 
   leftPart
     : Deriv R ⊆ M⟨ oR , FLRules ⟩
