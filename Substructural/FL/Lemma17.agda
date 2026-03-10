@@ -173,6 +173,120 @@ lemma2-FLe
     × (L⟨ ShiftCoreExt j FLeRules ⟩ ⊆ G⟨ j , FLeRules ⟩)
 lemma2-FLe e bn = lemma2-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
 
+-- Generalized versions for L = FLe + R₂
+
+shiftCoreInG-FLe-gen : ∀ {j R₂} → ShiftCoreDerivableInG j (FLeRules ∪R R₂)
+shiftCoreInG-FLe-gen sr []ᵃ = lift-G inl (shiftCoreInG-FLe sr []ᵃ)
+
+lj-ext-FLe-gen : ∀ {j R₂} → BiProgressiveR j FLeRules → Lj j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+lj-ext-FLe-gen bn = lift-BiProgressiveR bn (inl ∘ inl)
+
+shift1∨-ext-FLe-gen
+  : ∀ {j R₂}
+  → Expansive j FLeRules
+  → BiProgressiveR j FLeRules
+  → Shift1 j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+    × Shift∨ j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+shift1∨-ext-FLe-gen {j} e bn = lemma1-1 (inl ∘ inl ∘ inl) nExt
+  where
+  nExt : Nucleus j (L⟨ ShiftCoreExtGen j FLeRules _ ⟩)
+  nExt = mkNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl))
+
+survive-L⊸›-ext-FLe-gen
+  : ∀ {j R₂}
+  → Expansive j FLeRules
+  → BiProgressiveR j FLeRules
+  → L⊸j-local j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+    × L›j-local j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+survive-L⊸›-ext-FLe-gen {j} e bn =
+  lemma1-5-proof (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
+
+surv-FLe-gen
+  : ∀ {j R₂}
+  → Expansive j FLeRules
+  → BiProgressiveR j FLeRules
+  → ∀ {r} → FLeRules r → SurvivesAfter j r (ShiftCoreExtGen j FLeRules R₂)
+surv-FLe-gen {j} {R₂} e bn (inl (L∨ {U} {V} {a} {b} {c})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∨ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (da ∷ᵃ db ∷ᵃ []ᵃ)
+surv-FLe-gen {j} {R₂} e bn (inl (R∨₁ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (inl (R∨₁ {U = U} {a = j a} {b = j b})))) (d ∷ᵃ []ᵃ))
+      (snd (shift1∨-ext-FLe-gen {j = j} {R₂ = R₂} e bn) {a = a} {b = b}))
+surv-FLe-gen {j} {R₂} e bn (inl (R∨₂ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (inl (R∨₂ {U = U} {a = j a} {b = j b})))) (d ∷ᵃ []ᵃ))
+      (snd (shift1∨-ext-FLe-gen {j = j} {R₂ = R₂} e bn) {a = a} {b = b}))
+surv-FLe-gen {j} {R₂} e bn (inl (L∧₁ {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∧₁ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-FLe-gen {j} {R₂} e bn (inl (L∧₂ {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∧₂ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-FLe-gen {j} {R₂} e bn (inl (R∧ {U} {a} {b})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R∧ {U = U} {a = j a} {b = j b}))))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift∧-instance {a = a} {b = b}))) []ᵃ))
+surv-FLe-gen {j} {R₂} e bn (inl (L1 {U} {V} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L1 {U = U} {V = V} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-FLe-gen {j} {R₂} e bn (inl R1) []ᵃ =
+  Trans {U = []} {V₁ = []} {V₂ = []}
+    (ByRule (inl (inl (inl R1))) []ᵃ)
+    (fst (shift1∨-ext-FLe-gen {j = j} {R₂ = R₂} e bn))
+surv-FLe-gen {j} {R₂} e bn (inl (L· {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L· {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-FLe-gen {j} {R₂} e bn (inl (R· {U} {V} {a} {b})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r (U ++ V))
+    (Trans {U = U ++ V} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R· {U = U} {V = V} {a = j a} {b = j b}))))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift·-instance {a = a} {b = b}))) []ᵃ))
+surv-FLe-gen {j} {R₂} e bn (inl (L⊸ {U} {V} {W} {a} {b} {c})) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  fst (survive-L⊸›-ext-FLe-gen {j = j} {R₂ = R₂} e bn)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-FLe-gen {j} {R₂} e bn (inl (R⊸ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R⊸ {U = U} {a = a} {b = j b}))))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift⊸-instance {a = a} {b = b}))) []ᵃ))
+surv-FLe-gen {j} {R₂} e bn (inl (L› {U} {V} {W} {a} {b} {c})) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  snd (survive-L⊸›-ext-FLe-gen {j = j} {R₂ = R₂} e bn)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-FLe-gen {j} {R₂} e bn (inl (R› {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j FLeRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R› {U = U} {a = a} {b = j b}))))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift›-instance {a = a} {b = b}))) []ᵃ))
+surv-FLe-gen {j} {R₂} e bn (inr (comm-instance {U₁} {U₂} {a₁} {a₂} {b})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inr (comm-instance {U₁ = U₁} {U₂ = U₂} {a₁ = a₁} {a₂ = a₂} {b = j b}))))
+    (d ∷ᵃ []ᵃ)
+
+lemma2-FLe-gen
+  : ∀ {j R₂}
+  → Expansive j FLeRules
+  → BiProgressiveR j FLeRules
+  → (G⟨ j , FLeRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
+    × (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩ ⊆ G⟨ j , FLeRules ∪R R₂ ⟩)
+lemma2-FLe-gen e bn = lemma2-proof-gen (lj-ext-FLe-gen bn) (surv-FLe-gen e bn) shiftCoreInG-FLe-gen
+
 shiftCoreInG-FL : ∀ {j} → ShiftCoreDerivableInG j FLRules
 shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
   ByRule
@@ -337,6 +451,124 @@ lemma2-FL
 lemma2-FL e pn =
   lemma2-proof (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
 
+-- Generalized versions for L = FL + R₂
+
+shiftCoreInG-FL-gen : ∀ {j R₂} → ShiftCoreDerivableInG j (FLRules ∪R R₂)
+shiftCoreInG-FL-gen sr []ᵃ = lift-G inl (shiftCoreInG-FL sr []ᵃ)
+
+shift·-in-ext-gen-FL : ∀ {j R₂} → Shift· j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+shift·-in-ext-gen-FL = ByRule (inr (inl shift·-instance)) []ᵃ
+
+lj-ext-FL-gen
+  : ∀ {j R₂}
+  → Expansive j FLRules
+  → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
+  → Lj j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+lj-ext-FL-gen e (inl lpn) =
+  ljleft+shift·→lj (inl ∘ inl)
+    (lift-Expansive e (inl ∘ inl))
+    (lift-LeftProgressiveR lpn (inl ∘ inl))
+    shift·-in-ext-gen-FL
+lj-ext-FL-gen e (inr (inl rpn)) =
+  ljright+shift·→lj (inl ∘ inl)
+    (lift-Expansive e (inl ∘ inl))
+    (lift-RightProgressiveR rpn (inl ∘ inl))
+    shift·-in-ext-gen-FL
+lj-ext-FL-gen e (inr (inr bn)) =
+  lift-BiProgressiveR bn (inl ∘ inl)
+
+survive-L⊸›-ext-FL-gen
+  : ∀ {j R₂}
+  → Expansive j FLRules
+  → Lj j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+  → L⊸j-local j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+    × L›j-local j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+survive-L⊸›-ext-FL-gen {j} {R₂} e lj =
+  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) lj)
+
+surv-FL-gen
+  : ∀ {j R₂}
+  → Expansive j FLRules
+  → Lj j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+  → ∀ {r} → FLRules r → SurvivesAfter j r (ShiftCoreExtGen j FLRules R₂)
+surv-FL-gen {j} {R₂} e lj (L∨ {U} {V} {a} {b} {c}) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (L∨ {U = U} {V = V} {a = a} {b = b} {c = j c})))
+    (da ∷ᵃ db ∷ᵃ []ᵃ)
+surv-FL-gen {j} {R₂} e lj (R∨₁ {U} {a} {b}) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (R∨₁ {U = U} {a = j a} {b = j b}))) (d ∷ᵃ []ᵃ))
+      (snd (lemma1-1 (inl ∘ inl) (mkNucleus (lift-Expansive e (inl ∘ inl)) lj)) {a = a} {b = b}))
+surv-FL-gen {j} {R₂} e lj (R∨₂ {U} {a} {b}) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (R∨₂ {U = U} {a = j a} {b = j b}))) (d ∷ᵃ []ᵃ))
+      (snd (lemma1-1 (inl ∘ inl) (mkNucleus (lift-Expansive e (inl ∘ inl)) lj)) {a = a} {b = b}))
+surv-FL-gen {j} {R₂} e lj (L∧₁ {U} {V} {a} {b} {c}) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (L∧₁ {U = U} {V = V} {a = a} {b = b} {c = j c})))
+    (d ∷ᵃ []ᵃ)
+surv-FL-gen {j} {R₂} e lj (L∧₂ {U} {V} {a} {b} {c}) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (L∧₂ {U = U} {V = V} {a = a} {b = b} {c = j c})))
+    (d ∷ᵃ []ᵃ)
+surv-FL-gen {j} {R₂} e lj (R∧ {U} {a} {b}) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (R∧ {U = U} {a = j a} {b = j b})))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift∧-instance {a = a} {b = b}))) []ᵃ))
+surv-FL-gen {j} {R₂} e lj (L1 {U} {V} {c}) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (L1 {U = U} {V = V} {c = j c})))
+    (d ∷ᵃ []ᵃ)
+surv-FL-gen {j} {R₂} e lj R1 []ᵃ =
+  Trans {U = []} {V₁ = []} {V₂ = []}
+    (ByRule (inl (inl R1)) []ᵃ)
+    (fst (lemma1-1 (inl ∘ inl) (mkNucleus (lift-Expansive e (inl ∘ inl)) lj)))
+surv-FL-gen {j} {R₂} e lj (L· {U} {V} {a} {b} {c}) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (L· {U = U} {V = V} {a = a} {b = b} {c = j c})))
+    (d ∷ᵃ []ᵃ)
+surv-FL-gen {j} {R₂} e lj (R· {U} {V} {a} {b}) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r (U ++ V))
+    (Trans {U = U ++ V} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (R· {U = U} {V = V} {a = j a} {b = j b})))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift·-instance {a = a} {b = b}))) []ᵃ))
+surv-FL-gen {j} {R₂} e lj (L⊸ {U} {V} {W} {a} {b} {c}) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  fst (survive-L⊸›-ext-FL-gen {j = j} {R₂ = R₂} e lj)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-FL-gen {j} {R₂} e lj (R⊸ {U} {a} {b}) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (R⊸ {U = U} {a = a} {b = j b})))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift⊸-instance {a = a} {b = b}))) []ᵃ))
+surv-FL-gen {j} {R₂} e lj (L› {U} {V} {W} {a} {b} {c}) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  snd (survive-L⊸›-ext-FL-gen {j = j} {R₂ = R₂} e lj)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-FL-gen {j} {R₂} e lj (R› {U} {a} {b}) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv _} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (R› {U = U} {a = a} {b = j b})))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift›-instance {a = a} {b = b}))) []ᵃ))
+
+lemma2-FL-gen
+  : ∀ {j R₂}
+  → Expansive j FLRules
+  → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
+  → (G⟨ j , FLRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
+    × (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩ ⊆ G⟨ j , FLRules ∪R R₂ ⟩)
+lemma2-FL-gen e pn =
+  lemma2-proof-gen (lj-ext-FL-gen e pn) (surv-FL-gen e (lj-ext-FL-gen e pn)) shiftCoreInG-FL-gen
+
 shiftCoreInG-Min : ∀ {j} → ShiftCoreDerivableInG j MinRules
 shiftCoreInG-Min {j} (shift·-instance {a} {b}) []ᵃ =
   ByRule
@@ -496,3 +728,127 @@ lemma2-Min
   → (G⟨ j , MinRules ⟩ ⊆ L⟨ ShiftCoreExt j MinRules ⟩)
     × (L⟨ ShiftCoreExt j MinRules ⟩ ⊆ G⟨ j , MinRules ⟩)
 lemma2-Min e bn = lemma2-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
+
+-- Generalized versions for L = Min + R₂
+
+shiftCoreInG-Min-gen : ∀ {j R₂} → ShiftCoreDerivableInG j (MinRules ∪R R₂)
+shiftCoreInG-Min-gen sr []ᵃ = lift-G inl (shiftCoreInG-Min sr []ᵃ)
+
+lj-ext-Min-gen : ∀ {j R₂} → BiProgressiveR j MinRules → Lj j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+lj-ext-Min-gen bn = lift-BiProgressiveR bn (inl ∘ inl)
+
+shift1∨-ext-Min-gen
+  : ∀ {j R₂}
+  → Expansive j MinRules
+  → BiProgressiveR j MinRules
+  → Shift1 j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+    × Shift∨ j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+shift1∨-ext-Min-gen {j} e bn = lemma1-1 (inl ∘ inl ∘ inl) nExt
+  where
+  nExt : Nucleus j (L⟨ ShiftCoreExtGen j MinRules _ ⟩)
+  nExt = mkNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl))
+
+survive-L⊸›-ext-Min-gen
+  : ∀ {j R₂}
+  → Expansive j MinRules
+  → BiProgressiveR j MinRules
+  → L⊸j-local j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+    × L›j-local j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+survive-L⊸›-ext-Min-gen {j} e bn =
+  lemma1-5-proof (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
+
+surv-Min-gen
+  : ∀ {j R₂}
+  → Expansive j MinRules
+  → BiProgressiveR j MinRules
+  → ∀ {r} → MinRules r → SurvivesAfter j r (ShiftCoreExtGen j MinRules R₂)
+-- FL rules
+surv-Min-gen {j} {R₂} e bn (inl (L∨ {U} {V} {a} {b} {c})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∨ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (da ∷ᵃ db ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inl (R∨₁ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (inl (R∨₁ {U = U} {a = j a} {b = j b})))) (d ∷ᵃ []ᵃ))
+      (snd (shift1∨-ext-Min-gen {j = j} {R₂ = R₂} e bn) {a = a} {b = b}))
+surv-Min-gen {j} {R₂} e bn (inl (R∨₂ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule (inl (inl (inl (R∨₂ {U = U} {a = j a} {b = j b})))) (d ∷ᵃ []ᵃ))
+      (snd (shift1∨-ext-Min-gen {j = j} {R₂ = R₂} e bn) {a = a} {b = b}))
+surv-Min-gen {j} {R₂} e bn (inl (L∧₁ {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∧₁ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inl (L∧₂ {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L∧₂ {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inl (R∧ {U} {a} {b})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R∧ {U = U} {a = j a} {b = j b}))))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift∧-instance {a = a} {b = b}))) []ᵃ))
+surv-Min-gen {j} {R₂} e bn (inl (L1 {U} {V} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L1 {U = U} {V = V} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inl R1) []ᵃ =
+  Trans {U = []} {V₁ = []} {V₂ = []}
+    (ByRule (inl (inl (inl R1))) []ᵃ)
+    (fst (shift1∨-ext-Min-gen {j = j} {R₂ = R₂} e bn))
+surv-Min-gen {j} {R₂} e bn (inl (L· {U} {V} {a} {b} {c})) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inl (L· {U = U} {V = V} {a = a} {b = b} {c = j c}))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inl (R· {U} {V} {a} {b})) (da ∷ᵃ db ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r (U ++ V))
+    (Trans {U = U ++ V} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R· {U = U} {V = V} {a = j a} {b = j b}))))
+        (da ∷ᵃ db ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift·-instance {a = a} {b = b}))) []ᵃ))
+surv-Min-gen {j} {R₂} e bn (inl (L⊸ {U} {V} {W} {a} {b} {c})) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  fst (survive-L⊸›-ext-Min-gen {j = j} {R₂ = R₂} e bn)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-Min-gen {j} {R₂} e bn (inl (R⊸ {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R⊸ {U = U} {a = a} {b = j b}))))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift⊸-instance {a = a} {b = b}))) []ᵃ))
+surv-Min-gen {j} {R₂} e bn (inl (L› {U} {V} {W} {a} {b} {c})) (dU ∷ᵃ dWV ∷ᵃ []ᵃ) =
+  snd (survive-L⊸›-ext-Min-gen {j = j} {R₂ = R₂} e bn)
+    {U = U} {V = V} {W = W} {a = a} {b = b} {c = c} dU dWV
+surv-Min-gen {j} {R₂} e bn (inl (R› {U} {a} {b})) (d ∷ᵃ []ᵃ) =
+  transportCtx {L = Deriv (ShiftCoreExtGen j MinRules R₂)} (++-unit-r U)
+    (Trans {U = U} {V₁ = []} {V₂ = []}
+      (ByRule
+        (inl (inl (inl (R› {U = U} {a = a} {b = j b}))))
+        (d ∷ᵃ []ᵃ))
+      (ByRule (inr (inl (shift›-instance {a = a} {b = b}))) []ᵃ))
+-- Structural rules
+surv-Min-gen {j} {R₂} e bn (inr (inl (comm-instance {U₁} {U₂} {a₁} {a₂} {b}))) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inr (inl (comm-instance {U₁ = U₁} {U₂ = U₂} {a₁ = a₁} {a₂ = a₂} {b = j b})))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inr (inr (inl (mono-instance {U₁} {U₂} {a} {b})))) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inr (inr (inl (mono-instance {U₁ = U₁} {U₂ = U₂} {a = a} {b = j b}))))))
+    (d ∷ᵃ []ᵃ)
+surv-Min-gen {j} {R₂} e bn (inr (inr (inr (contr-instance {U₁} {U₂} {a} {b})))) (d ∷ᵃ []ᵃ) =
+  ByRule
+    (inl (inl (inr (inr (inr (contr-instance {U₁ = U₁} {U₂ = U₂} {a = a} {b = j b}))))))
+    (d ∷ᵃ []ᵃ)
+
+lemma2-Min-gen
+  : ∀ {j R₂}
+  → Expansive j MinRules
+  → BiProgressiveR j MinRules
+  → (G⟨ j , MinRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
+    × (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩ ⊆ G⟨ j , MinRules ∪R R₂ ⟩)
+lemma2-Min-gen e bn = lemma2-proof-gen (lj-ext-Min-gen bn) (surv-Min-gen e bn) shiftCoreInG-Min-gen
