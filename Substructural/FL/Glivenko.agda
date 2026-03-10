@@ -219,8 +219,8 @@ LgR-right-R iFL {U} {a} {b} d =
             {c = `0}))
         (d2 ∷ᵃ Refl ∷ᵃ []ᵃ)
 
-remark7 : LeftNucleus gL FL × RightNucleus gR FL
-remark7 =
+remark6 : LeftNucleus gL FL × RightNucleus gR FL
+remark6 =
   mkLeftNucleus RgL LgL-left
   ,
   mkRightNucleus RgR LgR-right
@@ -282,10 +282,10 @@ corollary1-from-theorem3 L t19L t19R =
   rightPart
   where
   ln-gL : LeftNucleus gL FL
-  ln-gL = fst remark7
+  ln-gL = fst remark6
 
   rn-gR : RightNucleus gR FL
-  rn-gR = snd remark7
+  rn-gR = snd remark6
 
   leftPart
     : L ⊆ M⟨ gL , FLRules ⟩
@@ -426,14 +426,14 @@ shift›-from-shift⊸ {R} iFLe s⊸ {a} {b} =
   ljR = BiProgressiveR.biProgressiveR nn-biProgressiveR-FLe iFLe
   -- [nn b › a] ⊢ a ⊸ nn b
   d1 : Deriv R (singleton (nn b `› a)) (a `⊸ nn b)
-  d1 = remark5-2-›→⊸ iFL iComm
+  d1 = remark4-2-›→⊸ iFL iComm
   -- Trans with s⊸: [nn b › a] ⊢ nn(a ⊸ b)
   d2 : Deriv R (singleton (nn b `› a)) (nn (a `⊸ b))
   d2 = transportCtx {L = Deriv R} (++-unit-r (singleton (nn b `› a)))
     (Trans {U = singleton (nn b `› a)} {V₁ = []} {V₂ = []} d1 s⊸)
   -- [a ⊸ b] ⊢ b › a
   d3 : Deriv R (singleton (a `⊸ b)) (b `› a)
-  d3 = remark5-2-⊸→› iFL iComm
+  d3 = remark4-2-⊸→› iFL iComm
   -- Rj: [a ⊸ b] ⊢ nn(b › a)
   d4 : Deriv R (singleton (a `⊸ b)) (nn (b `› a))
   d4 = Rnn-R iFLe d3

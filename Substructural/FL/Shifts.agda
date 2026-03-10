@@ -393,9 +393,9 @@ lemma1-3-proof {j} {R} iFL e pn {a} {b} =
   embed (inr cr) = inr (inl cr)
   rj' : Rj j (Deriv R')
   rj' = lift-Expansive e iR
-  -- [ja ∧ jb] ⊢ ja · jb  via remark13
+  -- [ja ∧ jb] ⊢ ja · jb  via remark4
   step∧→· : Deriv R' (singleton (j a `∧ j b)) (j a `· j b)
-  step∧→· = remark5-1-∧→· iFL' iMono iContr
+  step∧→· = remark4-1-∧→· iFL' iMono iContr
   -- [ja · jb] ⊢ j(a · b)  via lemma1-2 lifted to R'
   step-shift· : Deriv R' (singleton (j a `· j b)) (j (a `· b))
   step-shift· = lift-⊆R embed (lemma1-2-proof iFL e pn)
@@ -403,9 +403,9 @@ lemma1-3-proof {j} {R} iFL e pn {a} {b} =
   mid : Deriv R' (singleton (j a `∧ j b)) (j (a `· b))
   mid = transportCtx {L = Deriv R'} (++-unit-r (singleton (j a `∧ j b)))
     (Trans {U = singleton (j a `∧ j b)} {V₁ = []} {V₂ = []} step∧→· step-shift·)
-  -- [a · b] ⊢ a ∧ b  via remark13
+  -- [a · b] ⊢ a ∧ b  via remark4
   step·→∧ : Deriv R' (singleton (a `· b)) (a `∧ b)
-  step·→∧ = remark5-1-·→∧ iFL' iMono iContr
+  step·→∧ = remark4-1-·→∧ iFL' iMono iContr
   -- [a · b] ⊢ j(a ∧ b)  by Rj
   stepRj : Deriv R' (singleton (a `· b)) (j (a `∧ b))
   stepRj = rj' step·→∧
@@ -685,6 +685,67 @@ lemma2-from-base-shifts
     × (L⟨ ShiftCoreExt j R ⟩ ⊆ G⟨ j , R ⟩)
 lemma2-from-base-shifts lj surv s =
   lemma2-proof lj surv (shiftCore-base→G s)
+
+-- Generalized shift extension: base rules R₁ (that survive) + extra rules R₂ (whose Rj is added)
+ShiftCoreExtGen : (Formula → Formula) → RuleSet → RuleSet → RuleSet
+ShiftCoreExtGen j R₁ R₂ = (R₁ ∪R R₂) ∪R (ShiftCoreRules j ∪R RjRules j R₂)
+
+mutual
+
+  ext-gen→g-all
+    : ∀ {j R₁ R₂ ps}
+    → ShiftCoreDerivableInG j (R₁ ∪R R₂)
+    → PremisesHold (Deriv (ShiftCoreExtGen j R₁ R₂)) ps
+    → PremisesHold (G⟨ j , R₁ ∪R R₂ ⟩) ps
+  ext-gen→g-all {ps = []} s []ᵃ = []ᵃ
+  ext-gen→g-all {ps = p ∷ ps} s (d ∷ᵃ ds) = ext-gen→g s d ∷ᵃ ext-gen→g-all s ds
+
+  ext-gen→g
+    : ∀ {j R₁ R₂}
+    → ShiftCoreDerivableInG j (R₁ ∪R R₂)
+    → Deriv (ShiftCoreExtGen j R₁ R₂) ⊆ G⟨ j , R₁ ∪R R₂ ⟩
+  ext-gen→g s Refl = Refl
+  ext-gen→g s (Trans d d₁) = Trans (ext-gen→g s d) (ext-gen→g s d₁)
+  ext-gen→g s (ByRule (inl rr) ds) = ByRule (inl rr) (ext-gen→g-all s ds)
+  ext-gen→g s (ByRule (inr (inl sr)) ds) = s sr (ext-gen→g-all s ds)
+  ext-gen→g s (ByRule (inr (inr (rj-instance r₂))) ds) =
+    ByRule (inr (inr (rj-instance (inr r₂)))) (ext-gen→g-all s ds)
+
+mutual
+
+  g→ext-gen-all
+    : ∀ {j R₁ R₂ ps}
+    → Lj j (Deriv (ShiftCoreExtGen j R₁ R₂))
+    → (∀ {r} → R₁ r → SurvivesAfter j r (ShiftCoreExtGen j R₁ R₂))
+    → PremisesHold (G⟨ j , R₁ ∪R R₂ ⟩) ps
+    → PremisesHold (Deriv (ShiftCoreExtGen j R₁ R₂)) ps
+  g→ext-gen-all {ps = []} lj surv []ᵃ = []ᵃ
+  g→ext-gen-all {ps = p ∷ ps} lj surv (d ∷ᵃ ds) =
+    g→ext-gen lj surv d ∷ᵃ g→ext-gen-all lj surv ds
+
+  g→ext-gen
+    : ∀ {j R₁ R₂}
+    → Lj j (Deriv (ShiftCoreExtGen j R₁ R₂))
+    → (∀ {r} → R₁ r → SurvivesAfter j r (ShiftCoreExtGen j R₁ R₂))
+    → G⟨ j , R₁ ∪R R₂ ⟩ ⊆ Deriv (ShiftCoreExtGen j R₁ R₂)
+  g→ext-gen lj surv Refl = Refl
+  g→ext-gen lj surv (Trans d d₁) = Trans (g→ext-gen lj surv d) (g→ext-gen lj surv d₁)
+  g→ext-gen lj surv (ByRule (inl rr) ds) = ByRule (inl rr) (g→ext-gen-all lj surv ds)
+  g→ext-gen lj surv (ByRule (inr (inl lj-instance)) ds) =
+    lj (All-lookup-head (g→ext-gen-all lj surv ds))
+  g→ext-gen lj surv (ByRule (inr (inr (rj-instance (inl r₁)))) ds) =
+    surv r₁ (g→ext-gen-all lj surv ds)
+  g→ext-gen lj surv (ByRule (inr (inr (rj-instance (inr r₂)))) ds) =
+    ByRule (inr (inr (rj-instance r₂))) (g→ext-gen-all lj surv ds)
+
+lemma2-proof-gen
+  : ∀ {j R₁ R₂}
+  → Lj j (Deriv (ShiftCoreExtGen j R₁ R₂))
+  → (∀ {r} → R₁ r → SurvivesAfter j r (ShiftCoreExtGen j R₁ R₂))
+  → ShiftCoreDerivableInG j (R₁ ∪R R₂)
+  → (G⟨ j , R₁ ∪R R₂ ⟩ ⊆ Deriv (ShiftCoreExtGen j R₁ R₂))
+    × (Deriv (ShiftCoreExtGen j R₁ R₂) ⊆ G⟨ j , R₁ ∪R R₂ ⟩)
+lemma2-proof-gen lj surv s = g→ext-gen lj surv , ext-gen→g s
 
 Theorem3-Cond1 : (Formula → Formula) → Entailment → Type
 Theorem3-Cond1 j L = ∀ {Γ a} → M⟨ j , FLRules ⟩ Γ a ↔ L Γ (j a)
