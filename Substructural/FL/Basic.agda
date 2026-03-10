@@ -41,13 +41,13 @@ mp›-in
   → Deriv R ((b `› a) ∷ a ∷ []) b
 mp›-in i = lift-FL i mp›
 
-remark13-1-∧→·
+remark5-1-∧→·
   : ∀ {R a b}
   → FLRules ⊆R R
   → MonoRules ⊆R R
   → ContrRules ⊆R R
   → Deriv R (singleton (a `∧ b)) (a `· b)
-remark13-1-∧→· {R} {a} {b} iFL iMono iContr =
+remark5-1-∧→· {R} {a} {b} iFL iMono iContr =
   ByRule
     (iContr (contr-instance {U₁ = []} {U₂ = []} {a = a `∧ b} {b = a `· b}))
     (both ∷ᵃ []ᵃ)
@@ -70,13 +70,13 @@ remark13-1-∧→· {R} {a} {b} iFL iMono iContr =
       (iFL (R· {U = singleton (a `∧ b)} {V = singleton (a `∧ b)} {a = a} {b = b}))
       (da ∷ᵃ db ∷ᵃ []ᵃ)
 
-remark13-1-·→∧
+remark5-1-·→∧
   : ∀ {R a b}
   → FLRules ⊆R R
   → MonoRules ⊆R R
   → ContrRules ⊆R R
   → Deriv R (singleton (a `· b)) (a `∧ b)
-remark13-1-·→∧ {R} {a} {b} iFL iMono iContr =
+remark5-1-·→∧ {R} {a} {b} iFL iMono iContr =
   ByRule
     (iFL (R∧ {U = singleton (a `· b)} {a = a} {b = b}))
     (da ∷ᵃ db ∷ᵃ []ᵃ)
@@ -102,12 +102,12 @@ remark13-1-·→∧ {R} {a} {b} iFL iMono iContr =
       (iFL (L· {U = []} {V = []} {a = a} {b = b} {c = b}))
       (ab→b ∷ᵃ []ᵃ)
 
-remark13-2-⊸→›
+remark5-2-⊸→›
   : ∀ {R a b}
   → FLRules ⊆R R
   → CommRules ⊆R R
   → Deriv R (singleton (a `⊸ b)) (b `› a)
-remark13-2-⊸→› {R} {a} {b} iFL iComm =
+remark5-2-⊸→› {R} {a} {b} iFL iComm =
   ByRule
     (iFL (R› {U = singleton (a `⊸ b)} {a = a} {b = b}))
     (swapped ∷ᵃ []ᵃ)
@@ -124,12 +124,12 @@ remark13-2-⊸→› {R} {a} {b} iFL iComm =
   swapped : Deriv R ((a `⊸ b) ∷ a ∷ []) b
   swapped = commR {U₁ = []} {U₂ = []} {a₁ = a} {a₂ = a `⊸ b} {b = b} base
 
-remark13-2-›→⊸
+remark5-2-›→⊸
   : ∀ {R a b}
   → FLRules ⊆R R
   → CommRules ⊆R R
   → Deriv R (singleton (b `› a)) (a `⊸ b)
-remark13-2-›→⊸ {R} {a} {b} iFL iComm =
+remark5-2-›→⊸ {R} {a} {b} iFL iComm =
   ByRule
     (iFL (R⊸ {U = singleton (b `› a)} {a = a} {b = b}))
     (swapped ∷ᵃ []ᵃ)

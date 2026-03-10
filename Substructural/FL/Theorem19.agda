@@ -25,8 +25,8 @@ cond2→cond1
   : ∀ {j R}
   → Expansive j FLRules
   → Deriv R ⊆ M⟨ j , FLRules ⟩
-  → Theorem19-Cond2 j (Deriv R)
-  → Theorem19-Cond1 j (Deriv R)
+  → Theorem3-Cond2 j (Deriv R)
+  → Theorem3-Cond1 j (Deriv R)
 cond2→cond1 {j} {R} e l⊆m g⊆l {Γ} {a} =
   intro to' from'
   where
@@ -44,8 +44,8 @@ cond1→cond2
   : ∀ {j R}
   → FLRules ⊆R R
   → Expansive j FLRules
-  → Theorem19-Cond1 j (Deriv R)
-  → Theorem19-Cond2 j (Deriv R)
+  → Theorem3-Cond1 j (Deriv R)
+  → Theorem3-Cond2 j (Deriv R)
 cond1→cond2 {j} {R} iFL e c1 = g→l
   where
   m⊆k : M⟨ j , FLRules ⟩ ⊆ Kj j (Deriv R)
@@ -92,8 +92,8 @@ cond1→cond2 {j} {R} iFL e c1 = g→l
 
 cond2→cond3
   : ∀ {j R}
-  → Theorem19-Cond2 j (Deriv R)
-  → Theorem19-Cond3 j (Deriv R)
+  → Theorem3-Cond2 j (Deriv R)
+  → Theorem3-Cond3 j (Deriv R)
 cond2→cond3 {j} {R} g⊆l = s· , s∧ , s⊸ , s›
   where
   s· : ∀ {a b} → Deriv R (singleton (j a `· j b)) (j (a `· b))
@@ -113,12 +113,12 @@ cond3→cond2
   → FLRules ⊆R R
   → Expansive j FLRules
   → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
-  → Theorem19-Cond3 j (Deriv R)
-  → Theorem19-Cond2 j (Deriv R)
+  → Theorem3-Cond3 j (Deriv R)
+  → Theorem3-Cond2 j (Deriv R)
 cond3→cond2 {j} {R} iFL e pn (s· , s∧ , s⊸ , s›) d = ext⊆l (g⊆ext d)
   where
   g⊆ext : G⟨ j , FLRules ⟩ ⊆ L⟨ ShiftCoreExt j FLRules ⟩
-  g⊆ext = fst (lemma17-FL e pn)
+  g⊆ext = fst (lemma2-FL e pn)
 
   mutual
 
@@ -139,27 +139,27 @@ cond3→cond2 {j} {R} iFL e pn (s· , s∧ , s⊸ , s›) d = ext⊆l (g⊆ext d
     ext⊆l (ByRule (inr (shift⊸-instance {a = a} {b = b})) []ᵃ) = s⊸ {a} {b}
     ext⊆l (ByRule (inr (shift›-instance {a = a} {b = b})) []ᵃ) = s› {a} {b}
 
-theorem19-proof
+theorem3-proof
   : ∀ {j R}
   → FLRules ⊆R R
   → Expansive j FLRules
   → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
   → Deriv R ⊆ M⟨ j , FLRules ⟩
-  → (Theorem19-Cond1 j (Deriv R) ↔ Theorem19-Cond2 j (Deriv R))
-    × (Theorem19-Cond2 j (Deriv R) ↔ Theorem19-Cond3 j (Deriv R))
-theorem19-proof {j} {R} iFL e pn l⊆m =
+  → (Theorem3-Cond1 j (Deriv R) ↔ Theorem3-Cond2 j (Deriv R))
+    × (Theorem3-Cond2 j (Deriv R) ↔ Theorem3-Cond3 j (Deriv R))
+theorem3-proof {j} {R} iFL e pn l⊆m =
   intro to12 from12
   ,
   intro to23 from23
   where
-  to12 : Theorem19-Cond1 j (Deriv R) → Theorem19-Cond2 j (Deriv R)
+  to12 : Theorem3-Cond1 j (Deriv R) → Theorem3-Cond2 j (Deriv R)
   to12 = cond1→cond2 iFL e
 
-  from12 : Theorem19-Cond2 j (Deriv R) → Theorem19-Cond1 j (Deriv R)
+  from12 : Theorem3-Cond2 j (Deriv R) → Theorem3-Cond1 j (Deriv R)
   from12 = cond2→cond1 e l⊆m
 
-  to23 : Theorem19-Cond2 j (Deriv R) → Theorem19-Cond3 j (Deriv R)
+  to23 : Theorem3-Cond2 j (Deriv R) → Theorem3-Cond3 j (Deriv R)
   to23 = cond2→cond3
 
-  from23 : Theorem19-Cond3 j (Deriv R) → Theorem19-Cond2 j (Deriv R)
+  from23 : Theorem3-Cond3 j (Deriv R) → Theorem3-Cond2 j (Deriv R)
   from23 = cond3→cond2 iFL e pn

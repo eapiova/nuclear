@@ -175,9 +175,6 @@ RoL-R iFL {Γ} {a} d =
 oL-expansive : Rj oL FL
 oL-expansive = RoL
 
-proposition23-right : RightNucleus oR FL
-proposition23-right = oR-right-nucleus
-
 LoL-left : Ljleft oL FL
 LoL-left {U} {a} {b} d =
   ByRule (R› {U = suffix U (oL a)} {a = `0} {b = b `· `0}) (d4 ∷ᵃ []ᵃ)
@@ -252,8 +249,8 @@ LoL-left-R iFL {U} {a} {b} d =
 oL-left-nucleus : LeftNucleus oL FL
 oL-left-nucleus = mkLeftNucleus RoL LoL-left
 
-proposition23 : RightNucleus oR FL × LeftNucleus oL FL
-proposition23 = oR-right-nucleus , oL-left-nucleus
+remark8 : RightNucleus oR FL × LeftNucleus oL FL
+remark8 = oR-right-nucleus , oL-left-nucleus
 
 oR-expansive-R : Expansive oR FLRules
 oR-expansive-R = mkExpansive (RoR-R (λ r → r))
@@ -267,11 +264,11 @@ oL-expansive-R = mkExpansive (RoL-R (λ r → r))
 oL-leftProgressiveR : LeftProgressiveR oL FLRules
 oL-leftProgressiveR = mkLeftProgressiveR LoL-left-R
 
-oR-t19 : ∀ {R} → FLRules ⊆R R → theorem19 oR (Deriv R)
-oR-t19 iFL _ l⊆m = theorem19-proof iFL oR-expansive-R (inr (inl oR-rightProgressiveR)) l⊆m
+oR-t3 : ∀ {R} → FLRules ⊆R R → theorem3 oR (Deriv R)
+oR-t3 iFL _ l⊆m = theorem3-proof iFL oR-expansive-R (inr (inl oR-rightProgressiveR)) l⊆m
 
-oL-t19 : ∀ {R} → FLRules ⊆R R → theorem19 oL (Deriv R)
-oL-t19 iFL _ l⊆m = theorem19-proof iFL oL-expansive-R (inl oL-leftProgressiveR) l⊆m
+oL-t3 : ∀ {R} → FLRules ⊆R R → theorem3 oL (Deriv R)
+oL-t3 iFL _ l⊆m = theorem3-proof iFL oL-expansive-R (inl oL-leftProgressiveR) l⊆m
 
 oR-bridge
   : ∀ {R Γ a}
@@ -325,8 +322,8 @@ OL-Cond3 L =
   × (∀ {a b} → L ((a `⊸ oL b) ∷ `0 ∷ []) ((a `⊸ b) `· `0))
   × (∀ {a b} → L ((oL b `› a) ∷ `0 ∷ []) ((b `› a) `· `0))
 
-theorem24 : (L : Entailment) → Type
-theorem24 L =
+corollary3 : (L : Entailment) → Type
+corollary3 L =
   (L ⊆ M⟨ oR , FLRules ⟩
   → (OR-Cond1 L ↔ OR-Cond2 L)
     × (OR-Cond2 L ↔ OR-Cond3 L))
@@ -338,7 +335,7 @@ theorem24 L =
 or-cond1-full→paper
   : ∀ {R}
   → FLRules ⊆R R
-  → Theorem19-Cond1 oR (Deriv R)
+  → Theorem3-Cond1 oR (Deriv R)
   → OR-Cond1 (Deriv R)
 or-cond1-full→paper {R} iFL full {Γ} {a} =
   intro to' from'
@@ -355,7 +352,7 @@ or-cond1-paper→full
   : ∀ {R}
   → FLRules ⊆R R
   → OR-Cond1 (Deriv R)
-  → Theorem19-Cond1 oR (Deriv R)
+  → Theorem3-Cond1 oR (Deriv R)
 or-cond1-paper→full {R} iFL paper {Γ} {a} =
   intro to' from'
   where
@@ -370,7 +367,7 @@ or-cond1-paper→full {R} iFL paper {Γ} {a} =
 or-cond3-full→paper
   : ∀ {R}
   → FLRules ⊆R R
-  → Theorem19-Cond3 oR (Deriv R)
+  → Theorem3-Cond3 oR (Deriv R)
   → OR-Cond3 (Deriv R)
 or-cond3-full→paper {R} iFL (s· , s∧ , s⊸ , s›) =
   to· , to∧ , to⊸ , to›
@@ -395,7 +392,7 @@ or-cond3-paper→full
   : ∀ {R}
   → FLRules ⊆R R
   → OR-Cond3 (Deriv R)
-  → Theorem19-Cond3 oR (Deriv R)
+  → Theorem3-Cond3 oR (Deriv R)
 or-cond3-paper→full {R} iFL (s· , s∧ , s⊸ , s›) =
   from· , from∧ , from⊸ , from›
   where
@@ -418,7 +415,7 @@ or-cond3-paper→full {R} iFL (s· , s∧ , s⊸ , s›) =
 ol-cond1-full→paper
   : ∀ {R}
   → FLRules ⊆R R
-  → Theorem19-Cond1 oL (Deriv R)
+  → Theorem3-Cond1 oL (Deriv R)
   → OL-Cond1 (Deriv R)
 ol-cond1-full→paper {R} iFL full {Γ} {a} =
   intro to' from'
@@ -435,7 +432,7 @@ ol-cond1-paper→full
   : ∀ {R}
   → FLRules ⊆R R
   → OL-Cond1 (Deriv R)
-  → Theorem19-Cond1 oL (Deriv R)
+  → Theorem3-Cond1 oL (Deriv R)
 ol-cond1-paper→full {R} iFL paper {Γ} {a} =
   intro to' from'
   where
@@ -450,7 +447,7 @@ ol-cond1-paper→full {R} iFL paper {Γ} {a} =
 ol-cond3-full→paper
   : ∀ {R}
   → FLRules ⊆R R
-  → Theorem19-Cond3 oL (Deriv R)
+  → Theorem3-Cond3 oL (Deriv R)
   → OL-Cond3 (Deriv R)
 ol-cond3-full→paper {R} iFL (s· , s∧ , s⊸ , s›) =
   to· , to∧ , to⊸ , to›
@@ -475,7 +472,7 @@ ol-cond3-paper→full
   : ∀ {R}
   → FLRules ⊆R R
   → OL-Cond3 (Deriv R)
-  → Theorem19-Cond3 oL (Deriv R)
+  → Theorem3-Cond3 oL (Deriv R)
 ol-cond3-paper→full {R} iFL (s· , s∧ , s⊸ , s›) =
   from· , from∧ , from⊸ , from›
   where
@@ -495,22 +492,22 @@ ol-cond3-paper→full {R} iFL (s· , s∧ , s⊸ , s›) =
   from› {a} {b} =
     from (oL-bridge {R = R} {Γ = singleton (oL b `› a)} {a = b `› a} iFL) (s› {a} {b})
 
-theorem24-from-theorem19
+corollary3-from-theorem3
   : ∀ {R}
   → FLRules ⊆R R
-  → theorem19 oR (Deriv R)
-  → theorem19 oL (Deriv R)
-  → theorem24 (Deriv R)
-theorem24-from-theorem19 {R} iFL t19R t19L =
+  → theorem3 oR (Deriv R)
+  → theorem3 oL (Deriv R)
+  → corollary3 (Deriv R)
+corollary3-from-theorem3 {R} iFL t19R t19L =
   leftPart
   ,
   rightPart
   where
   rn-oR : RightNucleus oR FL
-  rn-oR = fst proposition23
+  rn-oR = fst remark8
 
   ln-oL : LeftNucleus oL FL
-  ln-oL = snd proposition23
+  ln-oL = snd remark8
 
   leftPart
     : Deriv R ⊆ M⟨ oR , FLRules ⟩
@@ -521,14 +518,14 @@ theorem24-from-theorem19 {R} iFL t19R t19L =
     ,
     intro to23 from23
     where
-    t : (Theorem19-Cond1 oR (Deriv R) ↔ Theorem19-Cond2 oR (Deriv R))
-        × (Theorem19-Cond2 oR (Deriv R) ↔ Theorem19-Cond3 oR (Deriv R))
+    t : (Theorem3-Cond1 oR (Deriv R) ↔ Theorem3-Cond2 oR (Deriv R))
+        × (Theorem3-Cond2 oR (Deriv R) ↔ Theorem3-Cond3 oR (Deriv R))
     t = t19R (inj₁ rn-oR) l⊆m
 
-    eq12full : Theorem19-Cond1 oR (Deriv R) ↔ OR-Cond2 (Deriv R)
+    eq12full : Theorem3-Cond1 oR (Deriv R) ↔ OR-Cond2 (Deriv R)
     eq12full = fst t
 
-    eq23full : OR-Cond2 (Deriv R) ↔ Theorem19-Cond3 oR (Deriv R)
+    eq23full : OR-Cond2 (Deriv R) ↔ Theorem3-Cond3 oR (Deriv R)
     eq23full = snd t
 
     eq12 : OR-Cond1 (Deriv R) ↔ OR-Cond2 (Deriv R)
@@ -552,14 +549,14 @@ theorem24-from-theorem19 {R} iFL t19R t19L =
     ,
     intro to23 from23
     where
-    t : (Theorem19-Cond1 oL (Deriv R) ↔ Theorem19-Cond2 oL (Deriv R))
-        × (Theorem19-Cond2 oL (Deriv R) ↔ Theorem19-Cond3 oL (Deriv R))
+    t : (Theorem3-Cond1 oL (Deriv R) ↔ Theorem3-Cond2 oL (Deriv R))
+        × (Theorem3-Cond2 oL (Deriv R) ↔ Theorem3-Cond3 oL (Deriv R))
     t = t19L (inj₂ (inj₁ ln-oL)) l⊆m
 
-    eq12full : Theorem19-Cond1 oL (Deriv R) ↔ OL-Cond2 (Deriv R)
+    eq12full : Theorem3-Cond1 oL (Deriv R) ↔ OL-Cond2 (Deriv R)
     eq12full = fst t
 
-    eq23full : OL-Cond2 (Deriv R) ↔ Theorem19-Cond3 oL (Deriv R)
+    eq23full : OL-Cond2 (Deriv R) ↔ Theorem3-Cond3 oL (Deriv R)
     eq23full = snd t
 
     eq12 : OL-Cond1 (Deriv R) ↔ OL-Cond2 (Deriv R)

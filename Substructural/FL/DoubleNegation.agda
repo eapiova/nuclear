@@ -11,7 +11,7 @@ open import Substructural.Core.Derivation Formula
 open import Substructural.Core.Nucleus Formula
 open import Substructural.Core.Extensions Formula
 open import Substructural.Core.Conservation Formula
-  using (Mono; transportCtx; comm-from-rules; mono-from-rules; lemma8-5-mono-M)
+  using (Mono; transportCtx; comm-from-rules; mono-from-rules; mono-in-M)
 open import Cubical.Data.List.Properties using (++-assoc; ++-unit-r)
 
 nn : Formula → Formula
@@ -97,7 +97,7 @@ nn-biProgressiveR-FLe = mkBiProgressiveR λ {R'} iR' →
   embed (inr cr) = inr cr
   shift·-nn : ∀ {R'} → FLeRules ⊆R R' → Shift· nn (Deriv R')
   shift·-nn iR' =
-    lift-⊆R (iR' ∘ embed) (lemma16-2-proof inj₁ nn-expansive (inl nn-leftProgR))
+    lift-⊆R (iR' ∘ embed) (lemma1-2-proof inj₁ nn-expansive (inl nn-leftProgR))
 
 -- Lifting to MinRules
 fle⊆min : FLeRules ⊆R MinRules
@@ -140,7 +140,7 @@ prepend-list-M (w ∷ W) {Γ} {c} d =
     (prepend-list-M W d)
   where
   monoM : Mono (M⟨ nn , MinRules ⟩)
-  monoM = lemma8-5-mono-M iMonoMin
+  monoM = mono-in-M iMonoMin
 
 append-list-M
   : ∀ W {Γ c}
@@ -153,7 +153,7 @@ append-list-M (w ∷ W) {Γ} {c} d =
     (append-list-M W step)
   where
   monoM : Mono (M⟨ nn , MinRules ⟩)
-  monoM = lemma8-5-mono-M iMonoMin
+  monoM = mono-in-M iMonoMin
 
   step : M⟨ nn , MinRules ⟩ (Γ ++ (w ∷ [])) c
   step =

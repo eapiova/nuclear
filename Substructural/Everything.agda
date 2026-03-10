@@ -9,7 +9,6 @@ open import Substructural.Core.Derivation public
 open import Substructural.Core.Nucleus public
 open import Substructural.Core.Extensions public
 open import Substructural.Core.Conservation public
-open import Substructural.Core.Diagrams public
 
 -- Section 3 layer (FL and structural extensions).
 open import Substructural.FL.Formula public
