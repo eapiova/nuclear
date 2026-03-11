@@ -12,6 +12,9 @@ Aczel, P.: Aspects of general topology in constructive set theory. Ann. Pure App
 \bibitem{van:kuroda}
 Berg, B.v.d.: A {K}uroda-style $j$-translation. Arch. Math. Log.  \textbf{58}(5),  627--634 (2019). \doi{10.1007/s00153-018-0656-x}
 
+\bibitem{nuclear:agda}
+Borsetto, R.: Glivenko's theorem underneath structure --- {A}gda formalisation. \url{https://github.com/eapiova/nuclear} (2026)
+
 \bibitem{Cignoli2003-CIGHBF}
 Cignoli, R., Torrens, A.: {H}{\'{a}}jek basic fuzzy logic and {L}ukasiewicz infinite-valued logic. Arch. Math. Log.  \textbf{42}(4),  361--370 (2003). \doi{10.1007/s001530200144}
 

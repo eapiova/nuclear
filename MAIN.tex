@@ -129,7 +129,7 @@ Another important feature of the main theorem in the present paper is that it fu
 
 In the final section, we apply our results to the substructural \emph{Full Lambek logic}~$\FL$ and its extensions \cite{Lambek1958TheMO,Lambek1961OnTC,Lambek1995SomeLM}. For the commutative case, using the Glivenko nucleus, $\neg\neg$ \cite{van:kuroda,esca:peirce}, we recover the aforementioned results in \cite{GO:glitsl,ResLat,ono:gli}. We also extend our findings to substructural variants of the \emph{open nucleus}, which remain meaningful even in the noncommutative setting.
 
-All the results in this paper are developed within an intuitionistic meta-theory. Working constructively at the meta-level ensures that the arguments themselves admit a computational interpretation and avoids relying on classical principles that would be incompatible with the constructive perspective underlying much of the work. An additional benefit of this approach is that the main constructions and proofs can be directly formalised in a proof assistant. In particular, we have implemented the results in Agda~\cite{norell:agda}\footnote{The formalisation is built on top of the \texttt{agda/cubical} library~\cite{vezzosi:cubicalagda}.}, providing a machine-checked formalisation of the main definitions and theorems. The source code is available at~\cite{nuclear:agda}. Throughout the paper, the symbol \agdalink{Substructural.Everything.html} next to a definition or theorem header is a clickable link to the corresponding formalised statement in the HTML rendering of the Agda source.
+All the results in this paper are developed within an intuitionistic meta-theory. Working constructively at the meta-level ensures that the arguments themselves admit a computational interpretation and avoids relying on classical principles that would be incompatible with the constructive perspective underlying much of the work. An additional benefit of this approach is that the main constructions and proofs can be directly formalised in a proof assistant. In particular, we have implemented the results in Cubical Agda~\cite{norell:agda,vezzosi:cubicalagda}, providing a machine-checked formalisation of the main definitions and theorems. The source code is available at \url{https://github.com/eapiova/nuclear}~\cite{nuclear:agda}. Throughout the paper, the symbol \agdalink{Substructural.Everything.html} next to a definition or theorem header is a clickable link to the corresponding formalised statement in the HTML rendering of the Agda source; readers can click the bird to jump directly to the formalised proof.
 
 \section{Substructural entailment relations and conservation}
 \label{entrel}
@@ -462,11 +462,11 @@ Two unary connectives are defined as follows:
 	-a &:= 0\multimapinv a.
 \end{align*}
 
-\begin{remark}[\agdalink{Substructural.FL.Basic.html}]\label{rmk-coincide}\
+\begin{remark}\label{rmk-coincide}\
 	Let $\L$ be an inductive extension of $\FL$.
 	\begin{enumerate}
-		\item If $\L$ admits Mono and Contr, then $\wedge$ and $\cdot$ coincide.
-		\item If $\L$ admits Comm, then $\multimapinv$ and $\multimap$ coincide.
+		\item \agdalink{Substructural.FL.Basic.html\#remark4-1-∧→·}\agdalink{Substructural.FL.Basic.html\#remark4-1-·→∧} If $\L$ admits Mono and Contr, then $\wedge$ and $\cdot$ coincide.
+		\item \agdalink{Substructural.FL.Basic.html\#remark4-2-⊸→›}\agdalink{Substructural.FL.Basic.html\#remark4-2-›→⊸} If $\L$ admits Comm, then $\multimapinv$ and $\multimap$ coincide.
 		\item \textnormal{R$\wedge$}, \textnormal{R$\multimapinv$} and \textnormal{R$\multimap$} are invertible in $\L$.
 	\end{enumerate}
 \end{remark}
@@ -568,7 +568,7 @@ Then
     Straightforward. For details, see Appendix \ref{sec-details}.
 \end{proof}
 
-\begin{lemma}[\agdalink{Substructural.FL.Lemma17.html\#lemma2-FL-gen}]\label{lem-FL}
+\begin{lemma}[\agdalink{Substructural.FL.Lemma17.html\#lemma2-FL}]\label{lem-FL}
 Let $\L=\FL+\mathcal{S}+\mathcal{R}$,
 where $\mathcal{S}\subseteq\{\textnormal{Comm, Mono, Contr}\}$,
 and let $j$ be a (right / left / bi-) nucleus on $\L$. Then
@@ -618,7 +618,7 @@ If, moreover, $\mathcal{S}=\{\textnormal{Comm, Mono, Contr}\}$, then $j$-shift$\
 $\Glivenko_j(\L)=\L+\{\textnormal{$j$-shift$\to$} \}+\mathcal{R}_j.$
 \end{proof}
 
-\begin{theorem}[Conservation for $\FL$ \agdalink{Substructural.FL.Theorem19.html\#theorem3-proof}]\label{thm-FL}
+\begin{theorem}[Conservation for $\FL$ \agdalink{Substructural.FL.Theorem19.html\#theorem3}]\label{thm-FL}
 Let $j$ be a (right / left / bi-) nucleus over $\FL$, and let $\L$ be an inductive extension of $\FL$ such that $\L\subseteq\Maximal_j(\FL)$. Then the following are equivalent:
 \begin{enumerate}
 	\item $\Maximal_j(\FL)\vdash U\rhd a$ if and only if $\L\vdash U\rhd j a$.
@@ -915,7 +915,7 @@ We recall a couple of well-known results whose proofs are straightforward:
     \end{adjustbox}
 	
 	where steps $(*)$ and $(**)$ correspond to several subsequent applications of R$\cdot$ and L$\cdot$, respectively, and are straightforwardly provable by induction.
-	\item Let us prove L$\multimap_{j}$, the other case is similar.
+	\item Let us prove derivability of L$\multimap_{j}$, the other case is similar.
 	%  I think the following should be the correct proof tree.
 	\[
 	\prftree[r]{Trans}{
@@ -940,7 +940,8 @@ We recall a couple of well-known results whose proofs are straightforward:
 \end{proof}
 
 \begin{proof}[Proof of Remark \ref{rmk-Glivenko}]
-	We only give the proof for L${\sim}{-}_\textnormal{left}$ R${\sim}{-}$; the proof for ${-}{\sim}$ is similar.
+	We only give the proof for ${\sim}{-}$, the proof for ${-}{\sim}$ is similar.
+	Derivability of L${\sim}{-}_\textnormal{left}$ R${\sim}{-}$:
 
     \begin{adjustbox}{max width=\textwidth}
 %	\[
@@ -1010,7 +1011,7 @@ We recall a couple of well-known results whose proofs are straightforward:
 
 \begin{proof}[Proof of Remark \ref{rmk-open}]
 	We only give the prove for $o_R$, the proof for $o_L$ is similar.
-	About R$o_R$:
+	Derivability of R$o_R$:
 	\[
 	\prftree[r]{\textnormal{R$\multimap$}}{
 		\prftree[r]{\textnormal{R$\cdot$}}{
@@ -1020,7 +1021,7 @@ We recall a couple of well-known results whose proofs are straightforward:
 		}{0,U\rhd 0\cdot a}
 	}{U\rhd 0\multimap0\cdot a}
 	\]
-	Before proving L$o_{R\textnormal{right}}$, we need:
+	Before proving derivability of L$o_{R\textnormal{right}}$, we need:
 
     \begin{adjustbox}{max width=\textwidth}
 %	\[
@@ -1054,7 +1055,7 @@ We recall a couple of well-known results whose proofs are straightforward:
 %	\]
 \end{adjustbox}
 	
-	We can now prove L$o_{R\textnormal{right}}$:
+	Derivability of L$o_{R\textnormal{right}}$:
 	\[
 	\prftree[r]{Trans}{
 		\prftree[r]{\textnormal{R$\multimap$}}{a,U\rhd0\multimap0\cdot b}{U\rhd a\multimap(0\multimap0\cdot b)}
