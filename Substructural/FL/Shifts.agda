@@ -760,8 +760,8 @@ Theorem3-Cond3 j L =
   × (∀ {a b} → L (singleton (a `⊸ j b)) (j (a `⊸ b)))
   × (∀ {a b} → L (singleton (j b `› a)) (j (b `› a)))
 
-theorem3 : (j : Formula → Formula) (L : Entailment) → Type
-theorem3 j L =
+theorem3-statement : (j : Formula → Formula) (L : Entailment) → Type
+theorem3-statement j L =
   (RightNucleus j FL ⊎ (LeftNucleus j FL ⊎ BiNucleus j FL))
   → L ⊆ M⟨ j , FLRules ⟩
   → (Theorem3-Cond1 j L ↔ Theorem3-Cond2 j L)

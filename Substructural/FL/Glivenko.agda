@@ -237,11 +237,11 @@ gR-expansive = mkExpansive (RgR-R (λ r → r))
 gR-rightProgressiveR : RightProgressiveR gR FLRules
 gR-rightProgressiveR = mkRightProgressiveR LgR-right-R
 
-gL-t3 : ∀ {R} → FLRules ⊆R R → theorem3 gL (Deriv R)
-gL-t3 iFL _ l⊆m = theorem3-proof iFL gL-expansive (inl gL-leftProgressiveR) l⊆m
+gL-t3 : ∀ {R} → FLRules ⊆R R → theorem3-statement gL (Deriv R)
+gL-t3 iFL _ l⊆m = theorem3 iFL gL-expansive (inl gL-leftProgressiveR) l⊆m
 
-gR-t3 : ∀ {R} → FLRules ⊆R R → theorem3 gR (Deriv R)
-gR-t3 iFL _ l⊆m = theorem3-proof iFL gR-expansive (inr (inl gR-rightProgressiveR)) l⊆m
+gR-t3 : ∀ {R} → FLRules ⊆R R → theorem3-statement gR (Deriv R)
+gR-t3 iFL _ l⊆m = theorem3 iFL gR-expansive (inr (inl gR-rightProgressiveR)) l⊆m
 
 GL-Cond1 : Entailment → Type
 GL-Cond1 L = ∀ {Γ a} → M⟨ gL , FLRules ⟩ Γ a ↔ L Γ (gL a)
@@ -273,8 +273,8 @@ corollary1 L =
 
 corollary1-from-theorem3
   : (L : Entailment)
-  → theorem3 gL L
-  → theorem3 gR L
+  → theorem3-statement gL L
+  → theorem3-statement gR L
   → corollary1 L
 corollary1-from-theorem3 L t19L t19R =
   leftPart
@@ -459,7 +459,7 @@ ono-cond3→cond2 {R} iFLe (s∧ , s⊸) d = ext⊆l (g⊆ext d)
   s› = shift›-from-shift⊸ iFLe s⊸
 
   g⊆ext : G⟨ nn , FLeRules ⟩ ⊆ L⟨ ShiftCoreExt nn FLeRules ⟩
-  g⊆ext = fst (lemma2-FLe nn-expansive nn-biProgressiveR-FLe)
+  g⊆ext = fst (lemma2-FLe-base nn-expansive nn-biProgressiveR-FLe)
 
   mutual
 
@@ -576,7 +576,7 @@ odintsov-cond3→cond2 {R} iMin s⊸ d = ext⊆l (g⊆ext d)
   s› = shift›-from-shift⊸ iFLe s⊸
 
   g⊆ext : Gli ⊆ L⟨ ShiftCoreExt nn MinRules ⟩
-  g⊆ext = fst (lemma2-Min nn-expansive-Min nn-biProgressiveR-Min)
+  g⊆ext = fst (lemma2-Min-base nn-expansive-Min nn-biProgressiveR-Min)
 
   mutual
 

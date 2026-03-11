@@ -165,13 +165,13 @@ surv-FLe {j} e bn (inr (comm-instance {U₁} {U₂} {a₁} {a₂} {b})) (d ∷�
     (inl (inr (comm-instance {U₁ = U₁} {U₂ = U₂} {a₁ = a₁} {a₂ = a₂} {b = j b})))
     (d ∷ᵃ []ᵃ)
 
-lemma2-FLe
+lemma2-FLe-base
   : ∀ {j}
   → Expansive j FLeRules
   → BiProgressiveR j FLeRules
   → (G⟨ j , FLeRules ⟩ ⊆ L⟨ ShiftCoreExt j FLeRules ⟩)
     × (L⟨ ShiftCoreExt j FLeRules ⟩ ⊆ G⟨ j , FLeRules ⟩)
-lemma2-FLe e bn = lemma2-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
+lemma2-FLe-base e bn = lemma2-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
 
 -- Generalized versions for L = FLe + R₂
 
@@ -279,13 +279,13 @@ surv-FLe-gen {j} {R₂} e bn (inr (comm-instance {U₁} {U₂} {a₁} {a₂} {b}
     (inl (inl (inr (comm-instance {U₁ = U₁} {U₂ = U₂} {a₁ = a₁} {a₂ = a₂} {b = j b}))))
     (d ∷ᵃ []ᵃ)
 
-lemma2-FLe-gen
+lemma2-FLe
   : ∀ {j R₂}
   → Expansive j FLeRules
   → BiProgressiveR j FLeRules
   → (G⟨ j , FLeRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
     × (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩ ⊆ G⟨ j , FLeRules ∪R R₂ ⟩)
-lemma2-FLe-gen e bn = lemma2-proof-gen (lj-ext-FLe-gen bn) (surv-FLe-gen e bn) shiftCoreInG-FLe-gen
+lemma2-FLe e bn = lemma2-proof-gen (lj-ext-FLe-gen bn) (surv-FLe-gen e bn) shiftCoreInG-FLe-gen
 
 shiftCoreInG-FL : ∀ {j} → ShiftCoreDerivableInG j FLRules
 shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
@@ -442,13 +442,13 @@ surv-FL {j} e lj (R› {U} {a} {b}) (d ∷ᵃ []ᵃ) =
         (d ∷ᵃ []ᵃ))
       (ByRule (inr (shift›-instance {a = a} {b = b})) []ᵃ))
 
-lemma2-FL
+lemma2-FL-base
   : ∀ {j}
   → Expansive j FLRules
   → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
   → (G⟨ j , FLRules ⟩ ⊆ L⟨ ShiftCoreExt j FLRules ⟩)
     × (L⟨ ShiftCoreExt j FLRules ⟩ ⊆ G⟨ j , FLRules ⟩)
-lemma2-FL e pn =
+lemma2-FL-base e pn =
   lemma2-proof (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
 
 -- Generalized versions for L = FL + R₂
@@ -560,13 +560,13 @@ surv-FL-gen {j} {R₂} e lj (R› {U} {a} {b}) (d ∷ᵃ []ᵃ) =
         (d ∷ᵃ []ᵃ))
       (ByRule (inr (inl (shift›-instance {a = a} {b = b}))) []ᵃ))
 
-lemma2-FL-gen
+lemma2-FL
   : ∀ {j R₂}
   → Expansive j FLRules
   → LeftProgressiveR j FLRules ⊎ (RightProgressiveR j FLRules ⊎ BiProgressiveR j FLRules)
   → (G⟨ j , FLRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
     × (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩ ⊆ G⟨ j , FLRules ∪R R₂ ⟩)
-lemma2-FL-gen e pn =
+lemma2-FL e pn =
   lemma2-proof-gen (lj-ext-FL-gen e pn) (surv-FL-gen e (lj-ext-FL-gen e pn)) shiftCoreInG-FL-gen
 
 shiftCoreInG-Min : ∀ {j} → ShiftCoreDerivableInG j MinRules
@@ -721,13 +721,13 @@ surv-Min {j} e bn (inr (inr (inr (contr-instance {U₁} {U₂} {a} {b})))) (d �
     (inl (inr (inr (inr (contr-instance {U₁ = U₁} {U₂ = U₂} {a = a} {b = j b})))))
     (d ∷ᵃ []ᵃ)
 
-lemma2-Min
+lemma2-Min-base
   : ∀ {j}
   → Expansive j MinRules
   → BiProgressiveR j MinRules
   → (G⟨ j , MinRules ⟩ ⊆ L⟨ ShiftCoreExt j MinRules ⟩)
     × (L⟨ ShiftCoreExt j MinRules ⟩ ⊆ G⟨ j , MinRules ⟩)
-lemma2-Min e bn = lemma2-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
+lemma2-Min-base e bn = lemma2-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
 
 -- Generalized versions for L = Min + R₂
 
@@ -845,10 +845,10 @@ surv-Min-gen {j} {R₂} e bn (inr (inr (inr (contr-instance {U₁} {U₂} {a} {b
     (inl (inl (inr (inr (inr (contr-instance {U₁ = U₁} {U₂ = U₂} {a = a} {b = j b}))))))
     (d ∷ᵃ []ᵃ)
 
-lemma2-Min-gen
+lemma2-Min
   : ∀ {j R₂}
   → Expansive j MinRules
   → BiProgressiveR j MinRules
   → (G⟨ j , MinRules ∪R R₂ ⟩ ⊆ L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
     × (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩ ⊆ G⟨ j , MinRules ∪R R₂ ⟩)
-lemma2-Min-gen e bn = lemma2-proof-gen (lj-ext-Min-gen bn) (surv-Min-gen e bn) shiftCoreInG-Min-gen
+lemma2-Min e bn = lemma2-proof-gen (lj-ext-Min-gen bn) (surv-Min-gen e bn) shiftCoreInG-Min-gen

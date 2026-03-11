@@ -264,11 +264,11 @@ oL-expansive-R = mkExpansive (RoL-R (λ r → r))
 oL-leftProgressiveR : LeftProgressiveR oL FLRules
 oL-leftProgressiveR = mkLeftProgressiveR LoL-left-R
 
-oR-t3 : ∀ {R} → FLRules ⊆R R → theorem3 oR (Deriv R)
-oR-t3 iFL _ l⊆m = theorem3-proof iFL oR-expansive-R (inr (inl oR-rightProgressiveR)) l⊆m
+oR-t3 : ∀ {R} → FLRules ⊆R R → theorem3-statement oR (Deriv R)
+oR-t3 iFL _ l⊆m = theorem3 iFL oR-expansive-R (inr (inl oR-rightProgressiveR)) l⊆m
 
-oL-t3 : ∀ {R} → FLRules ⊆R R → theorem3 oL (Deriv R)
-oL-t3 iFL _ l⊆m = theorem3-proof iFL oL-expansive-R (inl oL-leftProgressiveR) l⊆m
+oL-t3 : ∀ {R} → FLRules ⊆R R → theorem3-statement oL (Deriv R)
+oL-t3 iFL _ l⊆m = theorem3 iFL oL-expansive-R (inl oL-leftProgressiveR) l⊆m
 
 oR-bridge
   : ∀ {R Γ a}
@@ -495,8 +495,8 @@ ol-cond3-paper→full {R} iFL (s· , s∧ , s⊸ , s›) =
 corollary3-from-theorem3
   : ∀ {R}
   → FLRules ⊆R R
-  → theorem3 oR (Deriv R)
-  → theorem3 oL (Deriv R)
+  → theorem3-statement oR (Deriv R)
+  → theorem3-statement oL (Deriv R)
   → corollary3 (Deriv R)
 corollary3-from-theorem3 {R} iFL t19R t19L =
   leftPart

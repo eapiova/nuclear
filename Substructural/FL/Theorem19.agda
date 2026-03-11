@@ -118,7 +118,7 @@ cond3→cond2
 cond3→cond2 {j} {R} iFL e pn (s· , s∧ , s⊸ , s›) d = ext⊆l (g⊆ext d)
   where
   g⊆ext : G⟨ j , FLRules ⟩ ⊆ L⟨ ShiftCoreExt j FLRules ⟩
-  g⊆ext = fst (lemma2-FL e pn)
+  g⊆ext = fst (lemma2-FL-base e pn)
 
   mutual
 
@@ -139,7 +139,7 @@ cond3→cond2 {j} {R} iFL e pn (s· , s∧ , s⊸ , s›) d = ext⊆l (g⊆ext d
     ext⊆l (ByRule (inr (shift⊸-instance {a = a} {b = b})) []ᵃ) = s⊸ {a} {b}
     ext⊆l (ByRule (inr (shift›-instance {a = a} {b = b})) []ᵃ) = s› {a} {b}
 
-theorem3-proof
+theorem3
   : ∀ {j R}
   → FLRules ⊆R R
   → Expansive j FLRules
@@ -147,7 +147,7 @@ theorem3-proof
   → Deriv R ⊆ M⟨ j , FLRules ⟩
   → (Theorem3-Cond1 j (Deriv R) ↔ Theorem3-Cond2 j (Deriv R))
     × (Theorem3-Cond2 j (Deriv R) ↔ Theorem3-Cond3 j (Deriv R))
-theorem3-proof {j} {R} iFL e pn l⊆m =
+theorem3 {j} {R} iFL e pn l⊆m =
   intro to12 from12
   ,
   intro to23 from23
