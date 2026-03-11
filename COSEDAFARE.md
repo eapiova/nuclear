@@ -1,0 +1,15 @@
+- thorsten reference
+- riguardare i link
+- sitemare definizioni 2
+- implementare remark 2
+- sistemare remark 3: ora dice che funziona con Lj e contesti. Implementare left/right senza
+- sistemare ordine del plug e leggibilità
+- mettere link a regole full lambek
+- mettere link a min int logic
+- link a j-shift
+- linkare meglio lemma1 
+- cambiare nome lemma 2
+- rendere leggibile teorema 3 dimostrazione
+- dimostrare remark 5
+- riguardare doppia negazione
+- riguardare lolly vs implicazione in Corollario 2
