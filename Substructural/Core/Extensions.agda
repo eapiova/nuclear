@@ -11,21 +11,24 @@ open import Cubical.Data.List.Properties using (++-unit-r)
 
 -- Definition 7(1): Kleisli j-extension.
 Kj : (S → S) → Entailment → Entailment
-Kj j L Γ a = L Γ (j a)
+Kj j L Γ a = L ⊢ Γ ▷ j a
 
 Lift1 : (S → S) → Entailment → Entailment
-Lift1 k L Γ a = L (mapCtx k Γ) (k a)
+Lift1 k L Γ a = L ⊢ mapCtx k Γ ▷ k a
+
+mapBothRule : (S → S) → Rule → Rule
+mapBothRule f r = mkRule (map (mapBoth f) (premises r)) (mapBoth f (conclusion r))
 
 -- Definition 7(2): Lj rule family added to Gj.
 data LjRules (j : S → S) : RuleSet where
   lj-instance
     : ∀ {U V a b}
-    → LjRules j (mkRule ((plug₁ U a V ▷ j b) ∷ []) (plug₁ U (j a) V ▷ j b))
+    → LjRules j (mkRule ((U ++ a ∷ V ▷ j b) ∷ []) (U ++ j a ∷ V ▷ j b))
 
 data Lj+Rules (j : S → S) : RuleSet where
   lj+-instance
     : ∀ {U V a b}
-    → Lj+Rules j (mkRule ((plug₁ U a V ▷ b) ∷ []) (plug₁ U (j a) V ▷ b))
+    → Lj+Rules j (mkRule ((U ++ a ∷ V ▷ b) ∷ []) (U ++ j a ∷ V ▷ b))
 
 -- Definition 7(3): j-stab rule family added to Mj.
 data JStabRules (j : S → S) : RuleSet where
@@ -54,7 +57,7 @@ data Rk1Rules (k : S → S) (R : RuleSet) : RuleSet where
 data LkMinusRules (k : S → S) : RuleSet where
   lkminus-instance
     : ∀ {U V a b}
-    → LkMinusRules k (mkRule ((plug₁ U (k a) V ▷ b) ∷ []) (plug₁ U (k (k a)) V ▷ b))
+    → LkMinusRules k (mkRule ((U ++ k a ∷ V ▷ b) ∷ []) (U ++ k (k a) ∷ V ▷ b))
 
 data RkMinusRules (k : S → S) : RuleSet where
   rkminus-instance
@@ -75,7 +78,7 @@ data MonoRules : RuleSet where
     → MonoRules
         (mkRule
           ((U₁ ++ U₂ ▷ b) ∷ [])
-          (plug₁ U₁ a U₂ ▷ b))
+          (U₁ ++ a ∷ U₂ ▷ b))
 
 data ContrRules : RuleSet where
   contr-instance
@@ -83,7 +86,7 @@ data ContrRules : RuleSet where
     → ContrRules
         (mkRule
           ((U₁ ++ (a ∷ a ∷ U₂) ▷ b) ∷ [])
-          (plug₁ U₁ a U₂ ▷ b))
+          (U₁ ++ a ∷ U₂ ▷ b))
 
 -- Definition 7(2): Gj(L) = L + {Lj} + {rj : r ∈ R}. Expansive or not?
 GjRules : (S → S) → RuleSet → RuleSet
@@ -121,29 +124,29 @@ R + R' = Deriv (R ∪R R')
 
 embed-Lj
   : ∀ {j R U V a b}
-  → G⟨ j , R ⟩ (plug₁ U a V) (j b)
-  → G⟨ j , R ⟩ (plug₁ U (j a) V) (j b)
+  → G⟨ j , R ⟩ ⊢ U ++ a ∷ V ▷ j b
+  → G⟨ j , R ⟩ ⊢ U ++ j a ∷ V ▷ j b
 embed-Lj d = ByRule (inj₂ (inj₁ lj-instance)) (d ∷ᵃ []ᵃ)
 
 embed-Lj+
   : ∀ {j R U V a b}
-  → Max⟨ j , R ⟩ (plug₁ U a V) b
-  → Max⟨ j , R ⟩ (plug₁ U (j a) V) b
+  → Max⟨ j , R ⟩ ⊢ U ++ a ∷ V ▷ b
+  → Max⟨ j , R ⟩ ⊢ U ++ j a ∷ V ▷ b
 embed-Lj+ d = ByRule (inj₂ (inj₁ lj+-instance)) (d ∷ᵃ []ᵃ)
 
 embed-Exp
   : ∀ {j R a}
-  → Max⟨ j , R ⟩ (singleton a) (j a)
+  → Max⟨ j , R ⟩ ⊢ singleton a ▷ j a
 embed-Exp = ByRule (inj₂ (inj₂ exp-instance)) []ᵃ
 
 embed-jstab
   : ∀ {j R a}
-  → M⟨ j , R ⟩ (singleton (j a)) a
+  → M⟨ j , R ⟩ ⊢ singleton (j a) ▷ a
 embed-jstab = ByRule (inj₂ jstab-instance) []ᵃ
 
 jstab-in-M
   : ∀ {j R a}
-  → M⟨ j , R ⟩ (singleton (j a)) a
+  → M⟨ j , R ⟩ ⊢ singleton (j a) ▷ a
 jstab-in-M = embed-jstab
 
 lift-base-into-G
@@ -174,14 +177,14 @@ embed-Rk1 rr m ds = ModelOf.modelRule m (inj₂ (inj₁ (rk1-instance rr))) ds
 
 embed-Lk-
   : ∀ {k R U V a b}
-  → Kol1⟨ k , R ⟩ (plug₁ U (k a) V) b
-  → Kol1⟨ k , R ⟩ (plug₁ U (k (k a)) V) b
+  → Kol1⟨ k , R ⟩ ⊢ U ++ k a ∷ V ▷ b
+  → Kol1⟨ k , R ⟩ ⊢ U ++ k (k a) ∷ V ▷ b
 embed-Lk- d = ByRule (inj₂ (inj₂ (inj₁ lkminus-instance))) (d ∷ᵃ []ᵃ)
 
 embed-Rk-
   : ∀ {k R Γ a}
-  → Kol1⟨ k , R ⟩ Γ (k a)
-  → Kol1⟨ k , R ⟩ Γ (k (k a))
+  → Kol1⟨ k , R ⟩ ⊢ Γ ▷ k a
+  → Kol1⟨ k , R ⟩ ⊢ Γ ▷ k (k a)
 embed-Rk- d = ByRule (inj₂ (inj₂ (inj₂ rkminus-instance))) (d ∷ᵃ []ᵃ)
 
 GjRules-monotone
@@ -225,23 +228,23 @@ bi-on-M = mkBiProgressive liftLj
   where
   liftLj
     : ∀ {j R U V a b}
-    → M⟨ j , R ⟩ (plug₁ U a V) (j b)
-    → M⟨ j , R ⟩ (plug₁ U (j a) V) (j b)
+    → M⟨ j , R ⟩ ⊢ U ++ a ∷ V ▷ j b
+    → M⟨ j , R ⟩ ⊢ U ++ j a ∷ V ▷ j b
   liftLj {j} {R} {U} {V} {a} {b} d =
     Trans {U = singleton (j a)} {V₁ = U} {V₂ = V} embed-jstab d
 
 destab-M
   : ∀ {j R Γ a}
-  → M⟨ j , R ⟩ Γ (j a)
-  → M⟨ j , R ⟩ Γ a
+  → M⟨ j , R ⟩ ⊢ Γ ▷ j a
+  → M⟨ j , R ⟩ ⊢ Γ ▷ a
 destab-M {j} {R} {Γ} {a} d =
-  subst (λ X → M⟨ j , R ⟩ X a) (++-unit-r Γ)
+  subst (λ X → M⟨ j , R ⟩ ⊢ X ▷ a) (++-unit-r Γ)
     (Trans {U = Γ} {V₁ = []} {V₂ = []} {a = j a} {b = a} d embed-jstab)
 
 raise-M-from-expansive
   : ∀ {j R Γ a}
   → Expansive j R
-  → M⟨ j , R ⟩ Γ a
-  → M⟨ j , R ⟩ Γ (j a)
+  → M⟨ j , R ⟩ ⊢ Γ ▷ a
+  → M⟨ j , R ⟩ ⊢ Γ ▷ j a
 raise-M-from-expansive {j} {R} e =
   lift-Expansive e (λ rr → inl rr)

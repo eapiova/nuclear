@@ -1,11 +1,11 @@
-module Substructural.FL.Theorem19 where
+module Substructural.FL.Theorem3 where
 
 open import Substructural.Prelude
 open import Substructural.FL.Formula
 open import Substructural.FL.Rules
 open import Substructural.FL.Basic
 open import Substructural.FL.Shifts
-open import Substructural.FL.Lemma17
+open import Substructural.FL.Lemma2
 open import Substructural.Core.Judgement Formula
 open import Substructural.Core.Rules Formula
 open import Substructural.Core.Derivation Formula
@@ -13,6 +13,26 @@ open import Substructural.Core.Nucleus Formula
 open import Substructural.Core.Extensions Formula
 open import Substructural.Core.Conservation Formula
 open import Cubical.Data.List.Properties using (++-unit-r)
+
+Theorem3-Cond1 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond1 j L = ∀ {Γ a} → M⟨ j , FLRules ⟩ ⊢ Γ ▷ a ↔ L ⊢ Γ ▷ j a
+
+Theorem3-Cond2 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond2 j L = G⟨ j , FLRules ⟩ ⊆ L
+
+Theorem3-Cond3 : (Formula → Formula) → Entailment → Type
+Theorem3-Cond3 j L =
+  (∀ {a b} → L ⊢ singleton (j a · j b) ▷ j (a · b))
+  × (∀ {a b} → L ⊢ singleton (j a ∧ j b) ▷ j (a ∧ b))
+  × (∀ {a b} → L ⊢ singleton (a ⊸ j b) ▷ j (a ⊸ b))
+  × (∀ {a b} → L ⊢ singleton (j b › a) ▷ j (b › a))
+
+theorem3 : (j : Formula → Formula) (L : Entailment) → Type
+theorem3 j L =
+  (RightNucleus j FL ⊎ (LeftNucleus j FL ⊎ BiNucleus j FL))
+  → L ⊆ M⟨ j , FLRules ⟩
+  → (Theorem3-Cond1 j L ↔ Theorem3-Cond2 j L)
+    × (Theorem3-Cond2 j L ↔ Theorem3-Cond3 j L)
 
 private
   variable
@@ -31,13 +51,13 @@ cond2→cond1 {j} {R} e l⊆m g⊆l {Γ} {a} =
   intro to' from'
   where
   to'
-    : M⟨ j , FLRules ⟩ Γ a
-    → Deriv R Γ (j a)
+    : M⟨ j , FLRules ⟩ ⊢ Γ ▷ a
+    → Deriv R ⊢ Γ ▷ j a
   to' d = g⊆l (m→gj e d)
 
   from'
-    : Deriv R Γ (j a)
-    → M⟨ j , FLRules ⟩ Γ a
+    : Deriv R ⊢ Γ ▷ j a
+    → M⟨ j , FLRules ⟩ ⊢ Γ ▷ a
   from' d = destab-M (l⊆m d)
 
 cond1→cond2
@@ -54,13 +74,13 @@ cond1→cond2 {j} {R} iFL e c1 = g→l
   g⊆k : G⟨ j , FLRules ⟩ ⊆ Kj j (Deriv R)
   g⊆k d = m⊆k (g⊆m e d)
 
-  jj→j : ∀ b → Deriv R (singleton (j (j b))) (j b)
+  jj→j : ∀ b → Deriv R ⊢ singleton (j (j b)) ▷ j b
   jj→j b = m⊆k d
     where
     lj+M : Lj+ j (M⟨ j , FLRules ⟩)
     lj+M = jstab→lj+ (λ a → jstab-in-M {j = j} {R = FLRules} {a = a})
 
-    d : M⟨ j , FLRules ⟩ (singleton (j (j b))) b
+    d : M⟨ j , FLRules ⟩ ⊢ singleton (j (j b)) ▷ b
     d = lj+M {U = []} {V = []} {a = j b} {b = b} jstab-in-M
 
   mutual
@@ -96,16 +116,16 @@ cond2→cond3
   → Theorem3-Cond3 j (Deriv R)
 cond2→cond3 {j} {R} g⊆l = s· , s∧ , s⊸ , s›
   where
-  s· : ∀ {a b} → Deriv R (singleton (j a `· j b)) (j (a `· b))
+  s· : ∀ {a b} → Deriv R ⊢ singleton (j a · j b) ▷ j (a · b)
   s· {a} {b} = g⊆l (shiftCoreInG-FL (shift·-instance {a = a} {b = b}) []ᵃ)
 
-  s∧ : ∀ {a b} → Deriv R (singleton (j a `∧ j b)) (j (a `∧ b))
+  s∧ : ∀ {a b} → Deriv R ⊢ singleton (j a ∧ j b) ▷ j (a ∧ b)
   s∧ {a} {b} = g⊆l (shiftCoreInG-FL (shift∧-instance {a = a} {b = b}) []ᵃ)
 
-  s⊸ : ∀ {a b} → Deriv R (singleton (a `⊸ j b)) (j (a `⊸ b))
+  s⊸ : ∀ {a b} → Deriv R ⊢ singleton (a ⊸ j b) ▷ j (a ⊸ b)
   s⊸ {a} {b} = g⊆l (shiftCoreInG-FL (shift⊸-instance {a = a} {b = b}) []ᵃ)
 
-  s› : ∀ {a b} → Deriv R (singleton (j b `› a)) (j (b `› a))
+  s› : ∀ {a b} → Deriv R ⊢ singleton (j b › a) ▷ j (b › a)
   s› {a} {b} = g⊆l (shiftCoreInG-FL (shift›-instance {a = a} {b = b}) []ᵃ)
 
 cond3→cond2

@@ -18,5 +18,5 @@ open import Substructural.FL.Shifts public
 open import Substructural.FL.DoubleNegation public
 open import Substructural.FL.Glivenko public
 open import Substructural.FL.Open public
-open import Substructural.FL.Lemma17 public
-open import Substructural.FL.Theorem19 public
+open import Substructural.FL.Lemma2 public
+open import Substructural.FL.Theorem3 public

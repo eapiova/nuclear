@@ -27,9 +27,3 @@ infixr 5 _∪R_
 
 _∪R_ : RuleSet → RuleSet → RuleSet
 (R ∪R R') r = R r ⊎ R' r
-
-mapSuccRule : (S → S) → Rule → Rule
-mapSuccRule j r = mkRule (map (mapSucc j) (premises r)) (mapSucc j (conclusion r))
-
-mapBothRule : (S → S) → Rule → Rule
-mapBothRule f r = mkRule (map (mapBoth f) (premises r)) (mapBoth f (conclusion r))

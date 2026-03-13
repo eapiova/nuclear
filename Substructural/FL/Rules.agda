@@ -17,82 +17,82 @@ data FLRules : RuleSet where
     : ∀ {U V a b c}
     → FLRules
         (mkRule
-          ((plug₁ U a V ▷ c) ∷ (plug₁ U b V ▷ c) ∷ [])
-          (plug₁ U (a `∨ b) V ▷ c))
+          ((U ++ a ∷ V ▷ c) ∷ (U ++ b ∷ V ▷ c) ∷ [])
+          (U ++ (a ∨ b) ∷ V ▷ c))
   R∨₁
     : ∀ {U a b}
     → FLRules
         (mkRule
           ((U ▷ a) ∷ [])
-          (U ▷ a `∨ b))
+          (U ▷ a ∨ b))
   R∨₂
     : ∀ {U a b}
     → FLRules
         (mkRule
           ((U ▷ b) ∷ [])
-          (U ▷ a `∨ b))
+          (U ▷ a ∨ b))
   L∧₁
     : ∀ {U V a b c}
     → FLRules
         (mkRule
-          ((plug₁ U a V ▷ c) ∷ [])
-          (plug₁ U (a `∧ b) V ▷ c))
+          ((U ++ a ∷ V ▷ c) ∷ [])
+          (U ++ (a ∧ b) ∷ V ▷ c))
   L∧₂
     : ∀ {U V a b c}
     → FLRules
         (mkRule
-          ((plug₁ U b V ▷ c) ∷ [])
-          (plug₁ U (a `∧ b) V ▷ c))
+          ((U ++ b ∷ V ▷ c) ∷ [])
+          (U ++ (a ∧ b) ∷ V ▷ c))
   R∧
     : ∀ {U a b}
     → FLRules
         (mkRule
           ((U ▷ a) ∷ (U ▷ b) ∷ [])
-          (U ▷ a `∧ b))
+          (U ▷ a ∧ b))
   L1
     : ∀ {U V c}
     → FLRules
         (mkRule
           ((U ++ V ▷ c) ∷ [])
-          (plug₁ U `1 V ▷ c))
+          (U ++ `1 ∷ V ▷ c))
   R1
     : FLRules (mkRule [] ([] ▷ `1))
   L·
     : ∀ {U V a b c}
     → FLRules
         (mkRule
-          ((plug₁ U a (b ∷ V) ▷ c) ∷ [])
-          (plug₁ U (a `· b) V ▷ c))
+          ((U ++ a ∷ b ∷ V ▷ c) ∷ [])
+          (U ++ (a · b) ∷ V ▷ c))
   R·
     : ∀ {U V a b}
     → FLRules
         (mkRule
           ((U ▷ a) ∷ (V ▷ b) ∷ [])
-          (U ++ V ▷ a `· b))
+          (U ++ V ▷ a · b))
   L⊸
     : ∀ {U V W a b c}
     → FLRules
         (mkRule
-          ((U ▷ a) ∷ (plug₁ W b V ▷ c) ∷ [])
-          (plug₁ (W ++ U) (a `⊸ b) V ▷ c))
+          ((U ▷ a) ∷ (W ++ b ∷ V ▷ c) ∷ [])
+          ((W ++ U) ++ (a ⊸ b) ∷ V ▷ c))
   R⊸
     : ∀ {U a b}
     → FLRules
         (mkRule
           ((a ∷ U ▷ b) ∷ [])
-          (U ▷ a `⊸ b))
+          (U ▷ a ⊸ b))
   L›
     : ∀ {U V W a b c}
     → FLRules
         (mkRule
-          ((U ▷ a) ∷ (plug₁ W b V ▷ c) ∷ [])
-          (plug₁ W (b `› a) (U ++ V) ▷ c))
+          ((U ▷ a) ∷ (W ++ b ∷ V ▷ c) ∷ [])
+          (W ++ (b › a) ∷ (U ++ V) ▷ c))
   R›
     : ∀ {U a b}
     → FLRules
         (mkRule
-          ((plug₁ U a [] ▷ b) ∷ [])
-          (U ▷ b `› a))
+          ((U ++ a ∷ [] ▷ b) ∷ [])
+          (U ▷ b › a))
 
 FL : Entailment
 FL = L⟨ FLRules ⟩
@@ -112,7 +112,7 @@ data L0Rules : RuleSet where
     → L0Rules
         (mkRule
           []
-          (plug₁ U `0 V ▷ c))
+          (U ++ `0 ∷ V ▷ c))
 
 IntRules : RuleSet
 IntRules = MinRules ∪R L0Rules
