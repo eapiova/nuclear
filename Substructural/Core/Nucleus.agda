@@ -10,40 +10,40 @@ open import Cubical.Data.List.Properties using (++-unit-r)
 
 -- Definition 1: rule Rj.
 Rj : (S → S) → RuleSchema
-Rj j L = ∀ {Γ a} → L Γ a → L Γ (j a)
+Rj j L = ∀ {Γ a} → L ⊢ Γ ▷ a → L ⊢ Γ ▷ j a
 
 Reflj : (S → S) → RuleSchema
-Reflj j L = ∀ a → L (singleton a) (j a)
+Reflj j L = ∀ a → L ⊢ singleton a ▷ j a
 
 suffix : Ctx → S → Ctx
-suffix U a = plug₁ U a []
+suffix U a = U ++ a ∷ []
 
 prefix : S → Ctx → Ctx
-prefix a U = plug₁ [] a U
+prefix a U = a ∷ U
 
 -- Definition 1: Lj (and its left/right specializations).
 Lj : (S → S) → RuleSchema
-Lj j L = ∀ {U V a b} → L (plug₁ U a V) (j b) → L (plug₁ U (j a) V) (j b)
+Lj j L = ∀ {U V a b} → L ⊢ U ++ a ∷ V ▷ j b → L ⊢ U ++ j a ∷ V ▷ j b
 
 Ljleft : (S → S) → RuleSchema
-Ljleft j L = ∀ {U a b} → L (suffix U a) (j b) → L (suffix U (j a)) (j b)
+Ljleft j L = ∀ {U a b} → L ⊢ suffix U a ▷ j b → L ⊢ suffix U (j a) ▷ j b
 
 Ljright : (S → S) → RuleSchema
-Ljright j L = ∀ {U a b} → L (prefix a U) (j b) → L (prefix (j a) U) (j b)
+Ljright j L = ∀ {U a b} → L ⊢ prefix a U ▷ j b → L ⊢ prefix (j a) U ▷ j b
 
 Transj : (S → S) → RuleSchema
 Transj j L =
   ∀ {W U V a b}
-  → L W (j a)
-  → L (plug₁ U a V) (j b)
-  → L (plug U V W) (j b)
+  → L ⊢ W ▷ j a
+  → L ⊢ U ++ a ∷ V ▷ j b
+  → L ⊢ U ++ W ++ V ▷ j b
 
 -- Definition 5 / Lemma 6(3): stability and its Lj+ counterpart.
 j-stab : (S → S) → RuleSchema
-j-stab j L = ∀ a → L (singleton (j a)) a
+j-stab j L = ∀ a → L ⊢ singleton (j a) ▷ a
 
 Lj+ : (S → S) → RuleSchema
-Lj+ j L = ∀ {U V a b} → L (plug₁ U a V) b → L (plug₁ U (j a) V) b
+Lj+ j L = ∀ {U V a b} → L ⊢ U ++ a ∷ V ▷ b → L ⊢ U ++ j a ∷ V ▷ b
 
 record Nucleus (f : S → S) (L : Entailment) : Type ℓ where
   constructor mkNucleus
@@ -162,7 +162,7 @@ lift-Expansive
   → R ⊆R R'
   → Rj j (Deriv R')
 lift-Expansive {j} {R} {R'} e i {Γ} {a} d =
-  subst (λ X → Deriv R' X (j a)) (++-unit-r Γ)
+  subst (λ X → Deriv R' ⊢ X ▷ j a) (++-unit-r Γ)
     (Trans {U = Γ} {V₁ = []} {V₂ = []} d (lift-⊆R i (Expansive.expansive e Refl)))
 
 onBase-LeftProgressiveR : ∀ {j R} → LeftProgressiveR j R → Ljleft j (Deriv R)
@@ -196,9 +196,15 @@ lift-BiProgressiveR
 lift-BiProgressiveR n i = BiProgressiveR.biProgressiveR n i
 
 rj : (S → S) → Rule → Rule
-rj = mapSuccRule
+rj j r = mkRule (map (mapSucc j) (premises r)) (mapSucc j (conclusion r))
 
 -- Definition 5: "rule r survives after j" means rj is admissible.
 -- r must be admissible !!!
 SurvivesAfter : (S → S) → Rule → RuleSet → Type ℓ
 SurvivesAfter j r R = AdmissibleRule (rj j r) R
+
+cfTrans : S → S → S → Rule
+cfTrans a b c =
+  mkRule
+    ((singleton a ▷ b) ∷ (singleton b ▷ c) ∷ [])
+    (singleton a ▷ c)

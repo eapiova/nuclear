@@ -1,4 +1,4 @@
-module Substructural.FL.Lemma17 where
+module Substructural.FL.Lemma2 where
 
 open import Substructural.Prelude
 open import Substructural.FL.Formula
@@ -16,7 +16,7 @@ open import Cubical.Data.List.Properties using (++-unit-r)
 shiftCoreInG-FLe : ∀ {j} → ShiftCoreDerivableInG j FLeRules
 shiftCoreInG-FLe {j} (shift·-instance {a} {b}) []ᵃ =
   ByRule
-    (inl (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a `· b)})))
+    (inl (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a · b)})))
     (rjR· ∷ᵃ []ᵃ)
   where
   da : G⟨ j , FLeRules ⟩ (singleton (j a)) (j a)
@@ -25,7 +25,7 @@ shiftCoreInG-FLe {j} (shift·-instance {a} {b}) []ᵃ =
   db : G⟨ j , FLeRules ⟩ (singleton (j b)) (j b)
   db = Refl
 
-  rjR· : G⟨ j , FLeRules ⟩ (j a ∷ j b ∷ []) (j (a `· b))
+  rjR· : G⟨ j , FLeRules ⟩ (j a ∷ j b ∷ []) (j (a · b))
   rjR· =
     ByRule
       (inr (inr (rj-instance (inl (R· {U = singleton (j a)} {V = singleton (j b)} {a = a} {b = b})))))
@@ -33,16 +33,16 @@ shiftCoreInG-FLe {j} (shift·-instance {a} {b}) []ᵃ =
 
 shiftCoreInG-FLe {j} (shift∧-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R∧ {U = singleton (j a `∧ j b)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R∧ {U = singleton (j a ∧ j b)} {a = a} {b = b})))))
     (da ∷ᵃ db ∷ᵃ []ᵃ)
   where
-  da : G⟨ j , FLeRules ⟩ (singleton (j a `∧ j b)) (j a)
+  da : G⟨ j , FLeRules ⟩ (singleton (j a ∧ j b)) (j a)
   da =
     ByRule
       (inl (inl (L∧₁ {U = []} {V = []} {a = j a} {b = j b} {c = j a})))
       (Refl ∷ᵃ []ᵃ)
 
-  db : G⟨ j , FLeRules ⟩ (singleton (j a `∧ j b)) (j b)
+  db : G⟨ j , FLeRules ⟩ (singleton (j a ∧ j b)) (j b)
   db =
     ByRule
       (inl (inl (L∧₂ {U = []} {V = []} {a = j a} {b = j b} {c = j b})))
@@ -50,18 +50,18 @@ shiftCoreInG-FLe {j} (shift∧-instance {a} {b}) []ᵃ =
 
 shiftCoreInG-FLe {j} (shift⊸-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R⊸ {U = singleton (a `⊸ j b)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R⊸ {U = singleton (a ⊸ j b)} {a = a} {b = b})))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , FLeRules ⟩ (a ∷ (a `⊸ j b) ∷ []) (j b)
+  mp : G⟨ j , FLeRules ⟩ (a ∷ (a ⊸ j b) ∷ []) (j b)
   mp = lift-base-into-G (mp⊸-in {R = FLeRules} {a = a} {b = j b} (inl))
 
 shiftCoreInG-FLe {j} (shift›-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R› {U = singleton (j b `› a)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R› {U = singleton (j b › a)} {a = a} {b = b})))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , FLeRules ⟩ ((j b `› a) ∷ a ∷ []) (j b)
+  mp : G⟨ j , FLeRules ⟩ ((j b › a) ∷ a ∷ []) (j b)
   mp = lift-base-into-G (mp›-in {R = FLeRules} {a = a} {b = j b} (inl))
 
 lj-ext : ∀ {j} → BiProgressiveR j FLeRules → Lj j (L⟨ ShiftCoreExt j FLeRules ⟩)
@@ -85,7 +85,7 @@ survive-L⊸›-ext-FLe
   → L⊸j-local j (L⟨ ShiftCoreExt j FLeRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j FLeRules ⟩)
 survive-L⊸›-ext-FLe {j} e bn =
-  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
+  lemma1-5 (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
 
 surv-FLe
   : ∀ {j}
@@ -171,7 +171,7 @@ lemma2-FLe
   → BiProgressiveR j FLeRules
   → (G⟨ j , FLeRules ⟩ ⊆ L⟨ ShiftCoreExt j FLeRules ⟩)
     × (L⟨ ShiftCoreExt j FLeRules ⟩ ⊆ G⟨ j , FLeRules ⟩)
-lemma2-FLe e bn = lemma2-proof (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
+lemma2-FLe e bn = lemma2 (lj-ext bn) (surv-FLe e bn) shiftCoreInG-FLe
 
 -- Generalized versions for L = FLe + R₂
 
@@ -199,7 +199,7 @@ survive-L⊸›-ext-FLe-gen
   → L⊸j-local j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
     × L›j-local j (L⟨ ShiftCoreExtGen j FLeRules R₂ ⟩)
 survive-L⊸›-ext-FLe-gen {j} e bn =
-  lemma1-5-proof (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
+  lemma1-5 (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
 
 surv-FLe-gen
   : ∀ {j R₂}
@@ -290,7 +290,7 @@ lemma2-FLe-gen e bn = lemma2-proof-gen (lj-ext-FLe-gen bn) (surv-FLe-gen e bn) s
 shiftCoreInG-FL : ∀ {j} → ShiftCoreDerivableInG j FLRules
 shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
   ByRule
-    (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a `· b)}))
+    (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a · b)}))
     (rjR· ∷ᵃ []ᵃ)
   where
   da : G⟨ j , FLRules ⟩ (singleton (j a)) (j a)
@@ -299,7 +299,7 @@ shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
   db : G⟨ j , FLRules ⟩ (singleton (j b)) (j b)
   db = Refl
 
-  rjR· : G⟨ j , FLRules ⟩ (j a ∷ j b ∷ []) (j (a `· b))
+  rjR· : G⟨ j , FLRules ⟩ (j a ∷ j b ∷ []) (j (a · b))
   rjR· =
     ByRule
       (inr (inr (rj-instance (R· {U = singleton (j a)} {V = singleton (j b)} {a = a} {b = b}))))
@@ -307,16 +307,16 @@ shiftCoreInG-FL {j} (shift·-instance {a} {b}) []ᵃ =
 
 shiftCoreInG-FL {j} (shift∧-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (R∧ {U = singleton (j a `∧ j b)} {a = a} {b = b}))))
+    (inr (inr (rj-instance (R∧ {U = singleton (j a ∧ j b)} {a = a} {b = b}))))
     (da ∷ᵃ db ∷ᵃ []ᵃ)
   where
-  da : G⟨ j , FLRules ⟩ (singleton (j a `∧ j b)) (j a)
+  da : G⟨ j , FLRules ⟩ (singleton (j a ∧ j b)) (j a)
   da =
     ByRule
       (inl (L∧₁ {U = []} {V = []} {a = j a} {b = j b} {c = j a}))
       (Refl ∷ᵃ []ᵃ)
 
-  db : G⟨ j , FLRules ⟩ (singleton (j a `∧ j b)) (j b)
+  db : G⟨ j , FLRules ⟩ (singleton (j a ∧ j b)) (j b)
   db =
     ByRule
       (inl (L∧₂ {U = []} {V = []} {a = j a} {b = j b} {c = j b}))
@@ -324,18 +324,18 @@ shiftCoreInG-FL {j} (shift∧-instance {a} {b}) []ᵃ =
 
 shiftCoreInG-FL {j} (shift⊸-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (R⊸ {U = singleton (a `⊸ j b)} {a = a} {b = b}))))
+    (inr (inr (rj-instance (R⊸ {U = singleton (a ⊸ j b)} {a = a} {b = b}))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , FLRules ⟩ (a ∷ (a `⊸ j b) ∷ []) (j b)
+  mp : G⟨ j , FLRules ⟩ (a ∷ (a ⊸ j b) ∷ []) (j b)
   mp = mp⊸-in {R = GjRules j FLRules} {a = a} {b = j b} inl
 
 shiftCoreInG-FL {j} (shift›-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (R› {U = singleton (j b `› a)} {a = a} {b = b}))))
+    (inr (inr (rj-instance (R› {U = singleton (j b › a)} {a = a} {b = b}))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , FLRules ⟩ ((j b `› a) ∷ a ∷ []) (j b)
+  mp : G⟨ j , FLRules ⟩ ((j b › a) ∷ a ∷ []) (j b)
   mp = mp›-in {R = GjRules j FLRules} {a = a} {b = j b} inl
 
 shift·-in-ext : ∀ {j} → Shift· j (L⟨ ShiftCoreExt j FLRules ⟩)
@@ -366,7 +366,7 @@ survive-L⊸›-ext-FL
   → L⊸j-local j (L⟨ ShiftCoreExt j FLRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j FLRules ⟩)
 survive-L⊸›-ext-FL {j} e lj =
-  lemma1-5-proof inl (mkBiNucleus (lift-Expansive e inl) lj)
+  lemma1-5 inl (mkBiNucleus (lift-Expansive e inl) lj)
 
 surv-FL
   : ∀ {j}
@@ -449,7 +449,7 @@ lemma2-FL
   → (G⟨ j , FLRules ⟩ ⊆ L⟨ ShiftCoreExt j FLRules ⟩)
     × (L⟨ ShiftCoreExt j FLRules ⟩ ⊆ G⟨ j , FLRules ⟩)
 lemma2-FL e pn =
-  lemma2-proof (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
+  lemma2 (lj-ext-FL e pn) (surv-FL e (lj-ext-FL e pn)) shiftCoreInG-FL
 
 -- Generalized versions for L = FL + R₂
 
@@ -484,7 +484,7 @@ survive-L⊸›-ext-FL-gen
   → L⊸j-local j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
     × L›j-local j (L⟨ ShiftCoreExtGen j FLRules R₂ ⟩)
 survive-L⊸›-ext-FL-gen {j} {R₂} e lj =
-  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) lj)
+  lemma1-5 (inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) lj)
 
 surv-FL-gen
   : ∀ {j R₂}
@@ -572,42 +572,42 @@ lemma2-FL-gen e pn =
 shiftCoreInG-Min : ∀ {j} → ShiftCoreDerivableInG j MinRules
 shiftCoreInG-Min {j} (shift·-instance {a} {b}) []ᵃ =
   ByRule
-    (inl (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a `· b)})))
+    (inl (inl (L· {U = []} {V = []} {a = j a} {b = j b} {c = j (a · b)})))
     (rjR· ∷ᵃ []ᵃ)
   where
-  rjR· : G⟨ j , MinRules ⟩ (j a ∷ j b ∷ []) (j (a `· b))
+  rjR· : G⟨ j , MinRules ⟩ (j a ∷ j b ∷ []) (j (a · b))
   rjR· =
     ByRule
       (inr (inr (rj-instance (inl (R· {U = singleton (j a)} {V = singleton (j b)} {a = a} {b = b})))))
       (Refl ∷ᵃ Refl ∷ᵃ []ᵃ)
 shiftCoreInG-Min {j} (shift∧-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R∧ {U = singleton (j a `∧ j b)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R∧ {U = singleton (j a ∧ j b)} {a = a} {b = b})))))
     (da ∷ᵃ db ∷ᵃ []ᵃ)
   where
-  da : G⟨ j , MinRules ⟩ (singleton (j a `∧ j b)) (j a)
+  da : G⟨ j , MinRules ⟩ (singleton (j a ∧ j b)) (j a)
   da =
     ByRule
       (inl (inl (L∧₁ {U = []} {V = []} {a = j a} {b = j b} {c = j a})))
       (Refl ∷ᵃ []ᵃ)
-  db : G⟨ j , MinRules ⟩ (singleton (j a `∧ j b)) (j b)
+  db : G⟨ j , MinRules ⟩ (singleton (j a ∧ j b)) (j b)
   db =
     ByRule
       (inl (inl (L∧₂ {U = []} {V = []} {a = j a} {b = j b} {c = j b})))
       (Refl ∷ᵃ []ᵃ)
 shiftCoreInG-Min {j} (shift⊸-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R⊸ {U = singleton (a `⊸ j b)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R⊸ {U = singleton (a ⊸ j b)} {a = a} {b = b})))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , MinRules ⟩ (a ∷ (a `⊸ j b) ∷ []) (j b)
+  mp : G⟨ j , MinRules ⟩ (a ∷ (a ⊸ j b) ∷ []) (j b)
   mp = lift-base-into-G (mp⊸-in {R = MinRules} {a = a} {b = j b} inl)
 shiftCoreInG-Min {j} (shift›-instance {a} {b}) []ᵃ =
   ByRule
-    (inr (inr (rj-instance (inl (R› {U = singleton (j b `› a)} {a = a} {b = b})))))
+    (inr (inr (rj-instance (inl (R› {U = singleton (j b › a)} {a = a} {b = b})))))
     (mp ∷ᵃ []ᵃ)
   where
-  mp : G⟨ j , MinRules ⟩ ((j b `› a) ∷ a ∷ []) (j b)
+  mp : G⟨ j , MinRules ⟩ ((j b › a) ∷ a ∷ []) (j b)
   mp = lift-base-into-G (mp›-in {R = MinRules} {a = a} {b = j b} inl)
 
 lj-ext-Min : ∀ {j} → BiProgressiveR j MinRules → Lj j (L⟨ ShiftCoreExt j MinRules ⟩)
@@ -631,7 +631,7 @@ survive-L⊸›-ext-Min
   → L⊸j-local j (L⟨ ShiftCoreExt j MinRules ⟩)
     × L›j-local j (L⟨ ShiftCoreExt j MinRules ⟩)
 survive-L⊸›-ext-Min {j} e bn =
-  lemma1-5-proof (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
+  lemma1-5 (inl ∘ inl) (mkBiNucleus (lift-Expansive e inl) (lift-BiProgressiveR bn inl))
 
 surv-Min
   : ∀ {j}
@@ -727,7 +727,7 @@ lemma2-Min
   → BiProgressiveR j MinRules
   → (G⟨ j , MinRules ⟩ ⊆ L⟨ ShiftCoreExt j MinRules ⟩)
     × (L⟨ ShiftCoreExt j MinRules ⟩ ⊆ G⟨ j , MinRules ⟩)
-lemma2-Min e bn = lemma2-proof (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
+lemma2-Min e bn = lemma2 (lj-ext-Min bn) (surv-Min e bn) shiftCoreInG-Min
 
 -- Generalized versions for L = Min + R₂
 
@@ -755,7 +755,7 @@ survive-L⊸›-ext-Min-gen
   → L⊸j-local j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
     × L›j-local j (L⟨ ShiftCoreExtGen j MinRules R₂ ⟩)
 survive-L⊸›-ext-Min-gen {j} e bn =
-  lemma1-5-proof (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
+  lemma1-5 (inl ∘ inl ∘ inl) (mkBiNucleus (lift-Expansive e (inl ∘ inl)) (lift-BiProgressiveR bn (inl ∘ inl)))
 
 surv-Min-gen
   : ∀ {j R₂}

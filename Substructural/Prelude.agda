@@ -1,6 +1,6 @@
 module Substructural.Prelude where
 
-open import Cubical.Foundations.Prelude public hiding (_▷_)
+open import Cubical.Foundations.Prelude public hiding (_▷_; _∧_; _∨_)
 open import Cubical.Data.Empty as Empty public using (⊥)
 open import Cubical.Data.List.Base public using (List; []; _∷_; _++_; map)
 open import Cubical.Data.Sigma public using (Σ; _×_; _,_; fst; snd)

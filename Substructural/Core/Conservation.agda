@@ -14,20 +14,20 @@ open import Cubical.Data.List.Properties using (++-assoc; ++-unit-r)
 Comm : RuleSchema
 Comm L =
   ∀ {U₁ U₂ a₁ a₂ b}
-  → L (U₁ ++ (a₁ ∷ a₂ ∷ U₂)) b
-  → L (U₁ ++ (a₂ ∷ a₁ ∷ U₂)) b
+  → L ⊢ U₁ ++ (a₁ ∷ a₂ ∷ U₂) ▷ b
+  → L ⊢ U₁ ++ (a₂ ∷ a₁ ∷ U₂) ▷ b
 
 Mono : RuleSchema
 Mono L =
   ∀ {U₁ U₂ a b}
-  → L (U₁ ++ U₂) b
-  → L (plug₁ U₁ a U₂) b
+  → L ⊢ U₁ ++ U₂ ▷ b
+  → L ⊢ U₁ ++ a ∷ U₂ ▷ b
 
 Contr : RuleSchema
 Contr L =
   ∀ {U₁ U₂ a b}
-  → L (U₁ ++ (a ∷ a ∷ U₂)) b
-  → L (plug₁ U₁ a U₂) b
+  → L ⊢ U₁ ++ (a ∷ a ∷ U₂) ▷ b
+  → L ⊢ U₁ ++ a ∷ U₂ ▷ b
 
 comm-from-rules : ∀ {R} → CommRules ⊆R R → Comm (Deriv R)
 comm-from-rules i d = ByRule (i comm-instance) (d ∷ᵃ []ᵃ)
@@ -41,9 +41,9 @@ contr-from-rules i d = ByRule (i contr-instance) (d ∷ᵃ []ᵃ)
 transportCtx
   : ∀ {L : Entailment} {Γ Γ' b}
   → Γ ≡ Γ'
-  → L Γ b
-  → L Γ' b
-transportCtx {L = L} {b = b} p d = subst (λ X → L X b) p d
+  → L ⊢ Γ ▷ b
+  → L ⊢ Γ' ▷ b
+transportCtx {L = L} {b = b} p d = subst (λ X → L ⊢ X ▷ b) p d
 
 bubble-right
   : ∀ {L a b}
@@ -98,8 +98,8 @@ left→bi {j} {L} c n = mkBiProgressive liftL
   where
   liftL
     : ∀ {U V a b}
-    → L (plug₁ U a V) (j b)
-    → L (plug₁ U (j a) V) (j b)
+    → L ⊢ U ++ a ∷ V ▷ j b
+    → L ⊢ U ++ j a ∷ V ▷ j b
   liftL {U} {V} {a} {b} d =
     bubble-left {L = L} {a = j a} {b = j b} c U V
       (transportCtx {L = L} {b = j b} (++-assoc U V ((j a) ∷ []))
@@ -112,8 +112,8 @@ right→bi {j} {L} c n = mkBiProgressive liftR
   where
   liftR
     : ∀ {U V a b}
-    → L (plug₁ U a V) (j b)
-    → L (plug₁ U (j a) V) (j b)
+    → L ⊢ U ++ a ∷ V ▷ j b
+    → L ⊢ U ++ j a ∷ V ▷ j b
   liftR {U} {V} {a} {b} d =
     bubble-left {L = L} {a = j a} {b = j b} c U V
       (transportCtx {L = L} {b = j b} (++-assoc U V ((j a) ∷ []))
@@ -150,29 +150,29 @@ right↔bi {j} {L} c = intro toRB fromRB
   fromRB : BiProgressive j L → RightProgressive j L
   fromRB = bi→right
 
-lemma3-progressive
+remark2-progressive
   : ∀ {j L}
   → (BiProgressive j L → LeftProgressive j L × RightProgressive j L)
   × (Comm L
   → (LeftProgressive j L ↔ RightProgressive j L)
     × (LeftProgressive j L ↔ BiProgressive j L)
     × (RightProgressive j L ↔ BiProgressive j L))
-lemma3-progressive =
+remark2-progressive =
   (λ b → bi→left b , bi→right b)
   ,
   (λ c → left↔right c , left↔bi c , right↔bi c)
 
--- Lemma 3:
+-- Remark 2:
 -- (1) bi-nucleus implies left and right nuclei,
 -- (2) under Comm they are equivalent.
-lemma3
+remark2
   : ∀ {j L}
   → (BiNucleus j L → LeftNucleus j L × RightNucleus j L)
   × (Comm L
   → (LeftNucleus j L ↔ RightNucleus j L)
     × (LeftNucleus j L ↔ BiNucleus j L)
     × (RightNucleus j L ↔ BiNucleus j L))
-lemma3 {j} {L} =
+remark2 {j} {L} =
   (λ b →
       mkLeftNucleus (biNucleus-rj b)
         (LeftProgressive.leftProgressive
@@ -264,13 +264,13 @@ Reflj-admissible j L = ∀ a → RuleHoldsIn (mkRule [] (singleton a ▷ j a)) L
 Lj-admissible : (S → S) → Entailment → Type ℓ
 Lj-admissible j L =
   ∀ U V a b
-  → RuleHoldsIn (mkRule ((plug₁ U a V ▷ j b) ∷ []) (plug₁ U (j a) V ▷ j b)) L
+  → RuleHoldsIn (mkRule ((U ++ a ∷ V ▷ j b) ∷ []) (U ++ j a ∷ V ▷ j b)) L
 
 Transj-admissible : (S → S) → Entailment → Type ℓ
 Transj-admissible j L =
   ∀ W U V a b
   → RuleHoldsIn
-      (mkRule ((W ▷ j a) ∷ (plug₁ U a V ▷ j b) ∷ []) (plug U V W ▷ j b))
+      (mkRule ((W ▷ j a) ∷ (U ++ a ∷ V ▷ j b) ∷ []) (U ++ W ++ V ▷ j b))
       L
 
 jstab-admissible : (S → S) → Entailment → Type ℓ
@@ -279,7 +279,7 @@ jstab-admissible j L = ∀ a → RuleHoldsIn (mkRule [] (singleton (j a) ▷ a))
 Lj+-admissible : (S → S) → Entailment → Type ℓ
 Lj+-admissible j L =
   ∀ U V a b
-  → RuleHoldsIn (mkRule ((plug₁ U a V ▷ b) ∷ []) (plug₁ U (j a) V ▷ b)) L
+  → RuleHoldsIn (mkRule ((U ++ a ∷ V ▷ b) ∷ []) (U ++ j a ∷ V ▷ b)) L
 
 rj-adm→reflj-adm
   : ∀ {j R}
@@ -472,14 +472,54 @@ kj-refl
   → ∀ {a} → Kj j (L⟨ R ⟩) (singleton a) a
 kj-refl rj = rj Refl
 
+remark3-left
+  : ∀ {j R}
+  → Ljleft j (L⟨ R ⟩)
+  → ∀ {a b c} → SurvivesAfter j (cfTrans a b c) R
+remark3-left {j = j} {R = R} ljl {a} {b} {c} (d₁ ∷ᵃ d₂ ∷ᵃ []ᵃ) =
+  Trans {U = singleton a} {V₁ = []} {V₂ = []} {a = j b} {b = j c}
+    d₁'
+    (ljl {U = []} {a = b} {b = c} d₂')
+  where
+  d₁' : Deriv R (singleton a) (j b)
+  d₁' = d₁
+
+  d₂' : Deriv R (singleton b) (j c)
+  d₂' = d₂
+
+remark3-right
+  : ∀ {j R}
+  → Ljright j (L⟨ R ⟩)
+  → ∀ {a b c} → SurvivesAfter j (cfTrans a b c) R
+remark3-right {j = j} {R = R} ljr {a} {b} {c} (d₁ ∷ᵃ d₂ ∷ᵃ []ᵃ) =
+  Trans {U = singleton a} {V₁ = []} {V₂ = []} {a = j b} {b = j c}
+    d₁'
+    (ljr {U = []} {a = b} {b = c} d₂')
+  where
+  d₁' : Deriv R (singleton a) (j b)
+  d₁' = d₁
+
+  d₂' : Deriv R (singleton b) (j c)
+  d₂' = d₂
+
+-- Remark 3: left/right nuclei imply survival of context-free transitivity.
 remark3
+  : ∀ {j R}
+  → (LeftNucleus j (L⟨ R ⟩) → ∀ {a b c} → SurvivesAfter j (cfTrans a b c) R)
+    × (RightNucleus j (L⟨ R ⟩) → ∀ {a b c} → SurvivesAfter j (cfTrans a b c) R)
+remark3 =
+  (λ l → remark3-left (leftNucleus-ljleft l))
+  ,
+  (λ r → remark3-right (rightNucleus-ljright r))
+
+kj-trans
   : ∀ {j R}
   → Lj j (L⟨ R ⟩)
   → ∀ {U V₁ V₂ a b}
-  → Kj j (L⟨ R ⟩) U a
-  → Kj j (L⟨ R ⟩) (plug₁ V₁ a V₂) b
-  → Kj j (L⟨ R ⟩) (plug V₁ V₂ U) b
-remark3 lj d₁ d₂ = Trans d₁ (lj d₂)
+  → Kj j (L⟨ R ⟩) ⊢ U ▷ a
+  → Kj j (L⟨ R ⟩) ⊢ V₁ ++ a ∷ V₂ ▷ b
+  → Kj j (L⟨ R ⟩) ⊢ V₁ ++ U ++ V₂ ▷ b
+kj-trans lj d₁ d₂ = Trans d₁ (lj d₂)
 
 kj-lj-adm
   : ∀ {j R}
@@ -496,16 +536,16 @@ kj-rj-adm rj d = rj d
 kj-nucleus-facts
   : ∀ {j R}
   → Nucleus j (L⟨ R ⟩)
-  → (∀ {a} → Kj j (L⟨ R ⟩) (singleton a) a)
+  → (∀ {a} → Kj j (L⟨ R ⟩) ⊢ singleton a ▷ a)
     × (∀ {U V₁ V₂ a b}
-      → Kj j (L⟨ R ⟩) U a
-      → Kj j (L⟨ R ⟩) (plug₁ V₁ a V₂) b
-      → Kj j (L⟨ R ⟩) (plug V₁ V₂ U) b)
+      → Kj j (L⟨ R ⟩) ⊢ U ▷ a
+      → Kj j (L⟨ R ⟩) ⊢ V₁ ++ a ∷ V₂ ▷ b
+      → Kj j (L⟨ R ⟩) ⊢ V₁ ++ U ++ V₂ ▷ b)
     × Lj j (Kj j (L⟨ R ⟩))
     × Rj j (Kj j (L⟨ R ⟩))
 kj-nucleus-facts n =
   kj-refl (nucleus-rj n)
-  , remark3 (nucleus-lj n)
+  , kj-trans (nucleus-lj n)
   , kj-lj-adm (nucleus-lj n)
   , kj-rj-adm (nucleus-rj n)
 
