@@ -25,7 +25,7 @@ Borsetto, R.: Glivenko's theorem underneath structure --- {A}gda formalisation.
   \url{https://github.com/eapiova/nuclear} (2026)
 
 \bibitem{Cignoli2003-CIGHBF}
-Cignoli, R., Torrens, A.: {H}{\'{a}}jek basic fuzzy logic and {L}ukasiewicz
+Cignoli, R., Torrens, A.: {H}{\'{a}}jek basic fuzzy logic and {{\L}}ukasiewicz
   infinite-valued logic. Arch. Math. Log.  \textbf{42}(4),  361--370 (2003).
   \doi{10.1007/s001530200144}
 
@@ -48,6 +48,11 @@ Fellin, G., Schuster, P.: A general {G}livenko--{G}\"odel theorem for nuclei.
 \bibitem{fel:cat}
 Fellin, G., Schuster, P.: Conservation as translation. Rev. Symb. Log.
   \textbf{18}(1),  316--348 (2025). \doi{10.1017/s1755020324000170}
+
+\bibitem{FerreiraOlivaProtin}
+Ferreira, G., Oliva, P., Protin, C.L.: On the various translations between
+  classical, intuitionistic and linear logic. Studia Logica  (2024),
+  \url{https://arxiv.org/abs/2409.02249}, accepted for publication
 
 \bibitem{ResLat}
 Galatos, N., Jipsen, P., Kowalski, T., Ono, H.: Residuated Lattices: An
@@ -99,7 +104,7 @@ Lambek, J.: On the calculus of syntactic types. In: Jakobson, R. (ed.)
   \url{https://api.semanticscholar.org/CorpusID:118284222}
 
 \bibitem{Lambek1995SomeLM}
-Lambek, J.: Some lattice models of bilinear logic. algebra universalis
+Lambek, J.: Some lattice models of bilinear logic. Algebra Universalis
   \textbf{34},  541--550 (1995),
   \url{https://api.semanticscholar.org/CorpusID:119782781}
 
@@ -169,5 +174,10 @@ Simmons, H.: A curious nucleus. J. Pure Appl. Algebra  \textbf{214},
 Vezzosi, A., M\"ortberg, A., Abel, A.: Cubical {A}gda: A dependently typed
   programming language with univalence and higher inductive types. Journal of
   Functional Programming  \textbf{31} (2021), e8
+
+\bibitem{Wan_2024}
+Wan, C.S.: Semi-substructural logics à la lambek. Electronic Proceedings in
+  Theoretical Computer Science  \textbf{415},  195–213 (Dec 2024).
+  \doi{10.4204/eptcs.415.18}, \url{http://dx.doi.org/10.4204/EPTCS.415.18}
 
 \end{thebibliography}
