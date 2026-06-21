@@ -1,3 +1,27 @@
 _build/
 *.agdai
 
+# Local review/email material.
+*.eml
+review_*.pdf
+Fellin-CLaCM-2024.pdf
+
+# Draft/generated paper artifacts.
+Glivenko_substructural.pdf
+ProofAnalysis.pdf
+sogat-paris.pdf
+overleaf/MAIN-REVIEWED.pdf
+
+# LaTeX build products.
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
