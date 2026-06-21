@@ -4,6 +4,9 @@ _build/
 # Paper sources and build artifacts live in the private development repo.
 /overleaf/
 
+# Generated Agda HTML is published from the gh-pages branch.
+/html/
+
 # Local review/email material.
 *.eml
 review_*.pdf
