@@ -1,23 +1,17 @@
+# Agda build artifacts.
 _build/
 *.agdai
 
-# Paper sources and build artifacts live in the private development repo.
+# Public main is formalisation-only. Paper and review material live in
+# the private nuclear-dev repo.
 /overleaf/
+*.eml
+*.pdf
 
-# Generated Agda HTML is published from the gh-pages branch.
+# Generated Agda HTML is published from the gh-pages branch, not main.
 /html/
 
-# Local review/email material.
-*.eml
-review_*.pdf
-Fellin-CLaCM-2024.pdf
-
-# Draft/generated paper artifacts.
-Glivenko_substructural.pdf
-ProofAnalysis.pdf
-sogat-paris.pdf
-
-# LaTeX build products.
+# LaTeX build artifacts.
 *.aux
 *.bbl
 *.bcf
