@@ -5,7 +5,7 @@ module Substructural.Core.Judgement {ℓ} (S : Type ℓ) where
 open import Substructural.Prelude
 open import Cubical.Data.List.Properties using (map++)
 
--- Paper source overleaf/MAIN-REVIEWED.tex, Section 2:
+-- Paper, Section 2:
 -- contexts are finite lists over the object language S.
 Ctx : Type ℓ
 Ctx = List S

@@ -5,7 +5,7 @@ module Substructural.Core.Rules {ℓ} (S : Type ℓ) where
 open import Substructural.Prelude
 open import Substructural.Core.Judgement S
 
--- Paper source overleaf/MAIN-REVIEWED.tex, Section 2:
+-- Paper, Section 2:
 -- non-structural rules are finite premise lists with one conclusion.
 record Rule : Type ℓ where
   constructor mkRule

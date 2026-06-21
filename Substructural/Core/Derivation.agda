@@ -6,7 +6,7 @@ open import Substructural.Prelude
 open import Substructural.Core.Judgement S
 open import Substructural.Core.Rules S
 
--- Paper source overleaf/MAIN-REVIEWED.tex, Section 2:
+-- Paper, Section 2:
 -- entailment relation as a predicate Γ ▷ a.
 Entailment : Type (ℓ-suc ℓ)
 Entailment = Ctx → S → Type ℓ
