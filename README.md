@@ -1,8 +1,7 @@
 # nuclear
 
 Cubical Agda formalisation of conservation theorems for nuclei over
-substructural entailment relations (Full Lambek logic), in the style of
-Fellin / Schuster / Wan.
+substructural entailment relations (Full Lambek logic).
 
 ## Agda HTML
 
